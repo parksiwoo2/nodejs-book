@@ -8,7 +8,7 @@ const roomService = require("../services/roomService");
  */
 router.post("/", async (req, res) => {
     try {
-    const { title, bookid } = req.body; // 명세서 표기 소문자 bookid 반영
+    const { title, bookid } = req.body;
 
     // 실패 대응 (400 Bad Request) - 필수 인자 누락
     if (!title || !bookid) {

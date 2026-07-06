@@ -1,10 +1,17 @@
 const express = require("express");
 const path = require("path");
-const app = express();
-const connectDB = require("./config/db");
 const dotenv = require("dotenv");
+const passport = require('passport');
+
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
+
+const connectDB = require("./config/db");
 const apiRouter = require("./routes/api");
-dotenv.config();
+
+const app = express();
+
+app.use(passport.initialize());
+require('./config/passport')(passport);
 
 connectDB();
 
@@ -19,4 +26,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'main.html'));
 });
 
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+});
 app.listen(3000);

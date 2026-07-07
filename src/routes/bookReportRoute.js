@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const bookReportService = require("../services/bookReportService");
+const { checkAuth } = require("../middlewares/auth");
 
-/**
- * 임시 테스트용 유저 (roomRoute와 동일한 방식)
- * TODO: 로그인 PR(#5) 병합 후 auth 미들웨어의 req.user로 교체
- */
-const mockUser = {
-  _id: "65e000000000000000000001",
-  name: "테스트유저"
-};
+// 독후감 API 전체가 유저 권한 필요 — JWT 토큰 검증 후 req.user에 유저 정보 주입
+router.use(checkAuth);
+
+// User 모델에 name 필드가 없어 nickname을 name 스냅샷으로 사용
+const toUserSnapshot = (user) => ({ _id: user._id, name: user.nickname });
 
 // 서비스에서 던진 에러를 공통 에러 응답으로 변환
 const sendError = (res, error) => {
@@ -59,7 +57,7 @@ router.post("/", async (req, res) => {
       title,
       bookId,
       contents,
-      user: mockUser
+      user: toUserSnapshot(req.user)
     });
     return res.status(201).json({ success: true, data: report });
   } catch (error) {
@@ -100,7 +98,7 @@ router.patch("/:reportId", async (req, res) => {
 
     const report = await bookReportService.updateReport({
       reportId: req.params.reportId,
-      userId: mockUser._id,
+      userId: req.user._id,
       title,
       contents
     });
@@ -118,7 +116,7 @@ router.delete("/:reportId", async (req, res) => {
   try {
     const data = await bookReportService.deleteReport({
       reportId: req.params.reportId,
-      userId: mockUser._id
+      userId: req.user._id
     });
     return res.status(200).json({ success: true, data });
   } catch (error) {

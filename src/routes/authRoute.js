@@ -9,7 +9,7 @@ router.post('/', async (req, res) => {
     }
     try {
       const { token, user } = await login(username, password);
-      return res.status(200).json({ success: true, token, user });
+      return res.status(200).json({ success: true, data: { token, user } });
     }
     catch (error) {
       return res.status(401).json({ success: false, message: error.message });

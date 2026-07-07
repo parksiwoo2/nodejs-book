@@ -54,5 +54,36 @@ router.post("/", async (req, res) => {
     });
     }
 });
+/**
+ * 방탈퇴 api
+ * 최종 주소: DELETE /api/room/:roomid/leave
+ */
+
+router.delete("/:roomid/leave", async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        const userid = req.user ? req.user._id : "mockUserId1234";
+
+        await roomService.leaveRoom(roomid, userid);
+
+        return res.status(200).json({
+            success: true, 
+            message: "성공적으로 방을 나갔습니다."
+        });
+
+    } catch (error) {
+
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "방 탈퇴에 실패했습니다."
+            }
+        });
+
+    }
+});
 
 module.exports = router;

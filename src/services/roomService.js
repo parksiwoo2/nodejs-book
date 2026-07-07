@@ -36,4 +36,30 @@ const roomService = {
     }
 };
 
-module.exports = roomService;
+const deleteRoom = async (roomid, userId) => {
+
+    const room= await Room.findById(roomid)
+
+    if(!room) {
+        const error = new Error("존재하지 않는 방입니다.");
+        error.code = "ROOM_NOT_FOUND";
+        error.status = 400;
+        throw error;
+    }
+
+    if (room.master.id.toString() !== userId.toString()) {
+        const error = new Error("방장만 방을 삭제할 수 있습니다.");
+        error.code = "NOT_A_MASTER";
+        error.status = 400;
+        throw error;
+    }
+
+    await Room.findByIdAndDelete(roomid);
+
+    return true;
+}
+
+module.exports = {
+    createRoom,
+    deleteRoom
+};

@@ -55,4 +55,35 @@ router.post("/", async (req, res) => {
     }
 });
 
+/**
+ * 방 폭파(삭제) api
+ * 최종 주소 : DELETE /api/room/:roomid
+ */
+
+router.delete("/:roomid", async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        const userId = req.user ? req.user._id : "mockUserId1234";
+
+        await roomService.deleteRoom(roomid, userId);
+
+        return res.status(200).json({
+            success: true,
+            message: "성공적으로 방이 삭제되었습니다."
+        });
+    } 
+
+    catch (error) {
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "방 삭제에 실패했습니다."
+            }
+        });
+    }
+});
+
 module.exports = router;

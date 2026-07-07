@@ -55,4 +55,32 @@ router.post("/", async (req, res) => {
     }
 });
 
+/**
+ * 방 목록 api
+ * 최종 주소 : GET /api/room/list
+ */
+router.get("/list", async (req, res) => {
+    try {
+        const userId = req.user ? req.user._id : "mockUserId123";
+
+        const roomList = await roomService.getRoomList(userId);
+
+        return res.status(200).json({
+            success: true,
+            rooms: roomList
+        });
+    }
+
+    catch (error) {
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "방 목록을 불러오는데 실패했습니다."
+            }
+        });
+    }
+});
+
 module.exports = router;

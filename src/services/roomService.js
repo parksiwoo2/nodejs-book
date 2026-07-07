@@ -36,4 +36,15 @@ const roomService = {
     }
 };
 
-module.exports = roomService;
+const getRoomList = async (userId) => {
+    const myRooms = await Room.find({
+        "members.id": userId
+    }).sort({ createdAt: -1});
+
+    return myRooms;
+}
+
+module.exports = {
+    createRoom,
+    getRoomList
+};

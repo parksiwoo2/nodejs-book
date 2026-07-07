@@ -144,7 +144,7 @@ router.post("/:reportId/comments", async (req, res) => {
 
     const comment = await bookReportService.addComment({
       reportId: req.params.reportId,
-      user: mockUser,
+      user: toUserSnapshot(req.user),
       content
     });
     return res.status(201).json({ success: true, data: comment });
@@ -174,7 +174,7 @@ router.patch("/:reportId/comments/:commentId", async (req, res) => {
     const comment = await bookReportService.updateComment({
       reportId: req.params.reportId,
       commentId: req.params.commentId,
-      userId: mockUser._id,
+      userId: req.user._id,
       content
     });
     return res.status(200).json({ success: true, data: comment });
@@ -192,7 +192,7 @@ router.delete("/:reportId/comments/:commentId", async (req, res) => {
     const data = await bookReportService.deleteComment({
       reportId: req.params.reportId,
       commentId: req.params.commentId,
-      userId: mockUser._id
+      userId: req.user._id
     });
     return res.status(200).json({ success: true, data });
   } catch (error) {

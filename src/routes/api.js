@@ -16,4 +16,7 @@ router.use('/room', roomRouter);
 const bookReportRouter = require('./bookReportRoute');
 router.use('/book-report', bookReportRouter);
 
+const readingRouter = require('./readingRoute');
+router.use('/reading', readingRouter);
+
 module.exports = router;

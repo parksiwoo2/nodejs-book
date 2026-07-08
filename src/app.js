@@ -43,6 +43,9 @@ app.get('/mypage', (req, res) => {
 
 app.get('/edit-user', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'edit-user.html'));
+  
+app.get('/reading', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'reading.html'));
 });
 
 app.listen(3000);

@@ -1,6 +1,6 @@
-const Room = require("../models/Room");
+const Room = require("../models/roomModel");
 
-const Book = require("../models/Book");
+const Book = require("../models/bookModel");
 
 const roomService = {
     createRoom: async ({ title, bookId, user }) => {

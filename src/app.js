@@ -5,7 +5,6 @@ const passport = require('passport');
 const morgan = require('morgan');
 
 
-
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const connectDB = require("./config/db");
@@ -36,6 +35,14 @@ app.get('/login', (req, res) => {
 
 app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'register.html'));
+});
+
+app.get('/mypage', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'mypage.html'));
+});
+
+app.get('/edit-user', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'edit-user.html'));
 });
 
 app.listen(3000);

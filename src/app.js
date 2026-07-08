@@ -19,4 +19,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'main.html'));
 });
 
+app.get('/reading', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'reading.html'));
+});
+
 app.listen(3000);

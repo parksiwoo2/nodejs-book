@@ -124,4 +124,80 @@ router.delete("/:reportId", async (req, res) => {
   }
 });
 
+/**
+ * 댓글 작성
+ * 최종 주소: POST /api/book-report/:reportId/comments
+ */
+router.post("/:reportId/comments", async (req, res) => {
+  try {
+    const { content } = req.body;
+
+    if (!content) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "INVALID_INPUT",
+          message: "댓글 내용은 필수 입력값입니다."
+        }
+      });
+    }
+
+    const comment = await bookReportService.addComment({
+      reportId: req.params.reportId,
+      user: toUserSnapshot(req.user),
+      content
+    });
+    return res.status(201).json({ success: true, data: comment });
+  } catch (error) {
+    return sendError(res, error);
+  }
+});
+
+/**
+ * 댓글 수정 (댓글 작성자만)
+ * 최종 주소: PATCH /api/book-report/:reportId/comments/:commentId
+ */
+router.patch("/:reportId/comments/:commentId", async (req, res) => {
+  try {
+    const { content } = req.body;
+
+    if (!content) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "INVALID_INPUT",
+          message: "수정할 댓글 내용이 필요합니다."
+        }
+      });
+    }
+
+    const comment = await bookReportService.updateComment({
+      reportId: req.params.reportId,
+      commentId: req.params.commentId,
+      userId: req.user._id,
+      content
+    });
+    return res.status(200).json({ success: true, data: comment });
+  } catch (error) {
+    return sendError(res, error);
+  }
+});
+
+/**
+ * 댓글 삭제 (댓글 작성자만)
+ * 최종 주소: DELETE /api/book-report/:reportId/comments/:commentId
+ */
+router.delete("/:reportId/comments/:commentId", async (req, res) => {
+  try {
+    const data = await bookReportService.deleteComment({
+      reportId: req.params.reportId,
+      commentId: req.params.commentId,
+      userId: req.user._id
+    });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return sendError(res, error);
+  }
+});
+
 module.exports = router;

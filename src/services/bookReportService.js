@@ -111,6 +111,67 @@ const bookReportService = {
 
     await report.deleteOne();
     return { _id: report._id };
+  },
+
+  // 댓글 작성
+  addComment: async ({ reportId, user, content }) => {
+    const report = await findReportOrThrow(reportId);
+
+    report.comments.push({
+      userId: user._id,
+      writer: { _id: user._id, name: user.name },
+      content
+    });
+    await report.save();
+
+    const saved = report.comments[report.comments.length - 1];
+    return {
+      _id: saved._id,
+      writer: saved.writer,
+      content: saved.content,
+      createdDt: saved.createdDt
+    };
+  },
+
+  // 댓글 수정 — 댓글 작성자만, content만 가능
+  updateComment: async ({ reportId, commentId, userId, content }) => {
+    const report = await findReportOrThrow(reportId);
+
+    const comment = report.comments.id(commentId);
+    if (!comment) {
+      throwError("COMMENT_NOT_FOUND", 404, "존재하지 않는 댓글입니다.");
+    }
+    if (comment.writer._id.toString() !== userId.toString()) {
+      throwError("FORBIDDEN", 403, "댓글 작성자만 수정할 수 있습니다.");
+    }
+
+    comment.content = content;
+    await report.save();
+
+    return {
+      _id: comment._id,
+      writer: comment.writer,
+      content: comment.content,
+      createdDt: comment.createdDt
+    };
+  },
+
+  // 댓글 삭제 — 댓글 작성자만
+  deleteComment: async ({ reportId, commentId, userId }) => {
+    const report = await findReportOrThrow(reportId);
+
+    const comment = report.comments.id(commentId);
+    if (!comment) {
+      throwError("COMMENT_NOT_FOUND", 404, "존재하지 않는 댓글입니다.");
+    }
+    if (comment.writer._id.toString() !== userId.toString()) {
+      throwError("FORBIDDEN", 403, "댓글 작성자만 삭제할 수 있습니다.");
+    }
+
+    comment.deleteOne();
+    await report.save();
+
+    return { _id: commentId };
   }
 };
 

@@ -4,9 +4,6 @@ const router = express.Router();
 const mainRouter = require('./mainRoute');
 router.use('/main', mainRouter);
 
-const readingRouter = require('./readingRoute');
-router.use('/reading', readingRouter);
-
 const authRouter = require('./authRoute');
 router.use('/login', authRouter);
 

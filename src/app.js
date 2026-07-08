@@ -38,4 +38,8 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'register.html'));
 });
 
+app.get('/reading', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'reading.html'));
+});
+
 app.listen(3000);

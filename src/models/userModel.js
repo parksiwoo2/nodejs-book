@@ -52,12 +52,12 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
       },
-      totalReadingTime: {
+    }
+  ],
+  totalReadingTime: {
         type: Number,
         default: 0
-      }
-    }
-  ]
+  }
   }, { timestamps: true });
 
   userSchema.pre('save', async function (next) {

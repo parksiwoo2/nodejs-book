@@ -15,7 +15,7 @@ loginForm.addEventListener('submit', async (e) => {
   const result = await response.json();
 
   if (result.success) {
-    const token = result.token;
+    const token = result.data.token;
     localStorage.setItem('token', token);
     alert('로그인 성공!');
     window.location.href = '/';

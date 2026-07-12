@@ -36,11 +36,18 @@ const roomService = {
     }
 };
 
-const joinRoom = async (roomId, inviteCode, userId) => {
+/**
+ * 
+ * @param {String} roomId 
+ * @param {String} inviteCode 
+ * @param {Object} userId 
+ * @returns 
+ */
+const joinRoom = async (roomid, user, inviteCode) => {
     
-    const room = await Room.findById(roomId);
+    const room = await Room.findById(roomid);
 
-    if(!room || room.inviteCode !== inviteCode) {
+    if(!room) {
         const error = new Error("올바르지 않은 초대코드입니다.")
         error.code = "INVITECODE_NOT_FOUND";
         error.status = 400;
@@ -48,7 +55,6 @@ const joinRoom = async (roomId, inviteCode, userId) => {
     }
 
     const isAlreadyMember = room.member.some(memberId => memberId.toString() === userId.toString());
-
     if(isAlreadyMember) {
         const error = new Error("이미 참여한 방입니다.");
         error.code = "ALREADY_JOINED_ROOM";
@@ -56,17 +62,36 @@ const joinRoom = async (roomId, inviteCode, userId) => {
         throw error;
     }
 
-    room.member.push(userId);
-    room.membercount = room.member.length;
+    if (inviteCode) {
+        if (room.inviteCode !== inviteCode) {
+            const error = new Error("잘못된 코드를 입력하셨습니다.");
+            error.code = "INVITE_CODE_REQUIRED";
+            error.status = 400;
+            throw error;
+        }
+    }
+
+    else {
+        /*
+        if (room.isPrivate) {
+            const error = new Error("이 방은 초대코드가 있어야만 가입할 수 있습니다.");
+            error.code = "INVITE_CODE_REQUIRED";
+            error.status = 400;
+            throw error;
+        }
+        */
+    }
+
+   room.member.push({
+        _id: user.userId,
+        name: user.userName
+    });
+
+    room.membersCount = room.member.length;
 
     await room.save();
 
-    const updatedRoom = await Room.findById(roomId)
-        .populate("master", "name")           // master의 _id와 name
-        .populate("book", "title author")     // book의 _id, title, author
-        .populate("member", "name");          // member 배열 안의 _id와 name
-
-    return updatedRoom;
+    return room;
 };
 
 module.exports = roomService, joinRoom;

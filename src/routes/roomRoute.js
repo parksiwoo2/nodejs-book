@@ -64,16 +64,6 @@ router.post("/:roomid/join", async (req, res) => {
         const { roomid } = req.params;
         const { inviteCode } = req.body;
 
-        if (!inviteCode) {
-            return res.status(400).json({
-                success: false,
-                error: {
-                    code: "INVITE_CODE_REQUIRED",
-                    message: "잘못된 코드를 입력하셨습니다."
-                }
-            });
-        }
-
         // 로그인된 유저 정보가 있다고 가정
         // 실제 구현 시에는 req.user._id 등에서 가져옴
         const userId = req.user ? req.user._id : "mockUserId123";

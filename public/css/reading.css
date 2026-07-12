@@ -1,0 +1,76 @@
+.reading-panel {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.timer-display {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.timer-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  border: 4px solid var(--border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.timer-circle.active {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05), 0 0 20px rgba(37, 99, 235, 0.15);
+}
+
+.timer-circle span {
+  font-size: 44px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+  letter-spacing: -1px;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-pause {
+  background: var(--surface-muted);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-pause:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.btn-save {
+  background: #10b981;
+}
+.btn-save:hover:not(:disabled) {
+  background: #059669;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status-message {
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  height: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.status-message.show {
+  opacity: 1;
+}

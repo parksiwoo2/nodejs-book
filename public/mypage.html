@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Page</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body data-page="mypage">
+    <main class="container">
+      <section class="page-header">
+        <p class="eyebrow">Account</p>
+        <h1>My Page</h1>
+        <p class="description">Check your account information.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>User Info</h2>
+          <a class="text-link" href="/edit-user">Edit</a>
+        </div>
+
+        <div class="content-box">
+          <ul class="list">
+            <li class="list-item">
+              <strong>Nickname</strong>
+              <p id="mypageNickname">Loading...</p>
+            </li>
+            <li class="list-item">
+              <strong>Username</strong>
+              <p id="mypageUsername">Loading...</p>
+            </li>
+            <li class="list-item">
+              <strong>Role</strong>
+              <p id="mypageRole">Loading...</p>
+            </li>
+          </ul>
+
+          <p id="userMessage" class="message" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="/js/user.js"></script>
+  </body>
+</html>

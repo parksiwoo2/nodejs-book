@@ -3,7 +3,7 @@ const router = express.Router();
 const roomService = require("../services/roomService");
 
 const { checkAuth } = require("../middlewares/auth");
-/**
+/*
  * 방 생성 API 
  * 최종 주소: POST /api/room
  */
@@ -50,7 +50,7 @@ router.post("/", checkAuth, async (req, res) => {
     }
 });
 
-/**
+/*
  * 부원 가입 api
  * 최종 주소: POST /api/room/:roomid/join
  */
@@ -92,7 +92,8 @@ router.post("/:roomid/join", async (req, res) => {
     }
 
 }); 
-/* 방 목록 api
+/*
+ * 방 목록 api
  * 최종 주소 : GET /api/room/list
  */
 router.get("/list", checkAuth, async (req, res) => {

@@ -1,6 +1,6 @@
-const Room = require("../models/Room");
+const Room = require("../models/roomModel");
 
-const Book = require("../models/Book");
+const Book = require("../models/bookModel");
 
 const roomService = {
     createRoom: async ({ title, bookId, user }) => {
@@ -58,7 +58,18 @@ const getRoomDetail = async (roomid, userId) => {
     return room;
 };
 
+/*
+ * 전체방 목록 조회 Service
+ * 개설된 모든 방을 최신순으로 조회합니다. 
+ */
+const getAllRoomList = async () => {
+    const allRooms = await Room.find({}).sort({ createdAt: -1});
+
+    return allRooms;
+}
+
 module.exports = {
     createRoom,
-    getRoomDetail 
-};
+    getRoomDetail,
+    getAllRoomList
+}

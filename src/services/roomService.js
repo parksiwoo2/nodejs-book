@@ -82,7 +82,7 @@ const joinRoom = async (roomid, user, inviteCode) => {
         */
     }
 
-   room.member.push({
+    room.member.push({
         _id: user.userId,
         name: user.userName
     });

@@ -48,6 +48,6 @@ const getAllRoomList = async () => {
 }
 
 module.exports = {
-    createRoom,
+    createRoom: roomService.createRoom,
     getAllRoomList
 };

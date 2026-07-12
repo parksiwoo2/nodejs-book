@@ -86,4 +86,30 @@ router.delete("/:roomid/leave", async (req, res) => {
     }
 });
 
+/**
+ * 방 목록 api
+ * 최종 주소 : GET /api/room/list
+ */
+router.get("/list", async (req, res) => {
+    try {
+        const allRooms = await roomService.getAllRoomList();
+
+        return res.status(200).json({
+            success: true,
+            rooms: allRooms
+        });
+    }
+
+    catch (error) {
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "전체 방 목록을 불러오는데 실패했습니다."
+            }
+        });
+    }
+});
+
 module.exports = router;

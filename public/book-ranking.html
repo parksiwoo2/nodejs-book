@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Ranking</title>
+</head>
+<body>
+  <h1>Book Ranking</h1>
+
+  <section>
+    <label for="period">기간 선택</label>
+    <select id="period">
+      <option value="all">전체</option>
+      <option value="daily">일간</option>
+      <option value="weekly">주간</option>
+      <option value="monthly">월간</option>
+    </select>
+
+    <button id="loadRankingBtn">랭킹 조회</button>
+  </section>
+
+  <hr />
+
+  <section>
+    <h2>랭킹 목록</h2>
+
+    <div id="loading" style="display: none;">
+      불러오는 중...
+    </div>
+
+    <div id="errorMessage" style="color: red;"></div>
+
+    <table border="1" cellpadding="8">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>제목</th>
+          <th>저자</th>
+          <th>방 개수</th>
+          <th>총 멤버 수</th>
+          <th>댓글 수</th>
+          <th>랭킹 점수</th>
+        </tr>
+      </thead>
+      <tbody id="rankingTableBody">
+      </tbody>
+    </table>
+  </section>
+
+  <script src="/js/bookRanking.js"></script>
+</body>
+</html>

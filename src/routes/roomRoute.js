@@ -21,12 +21,6 @@ router.post("/", async (req, res) => {
         });
     }
 
-    // 임시 테스트용 유저 데이터 주입
-    const mockUser = {
-        _id: "65e000000000000000000001", 
-        name: "테스트방장"
-    };
-
     // 2단계 서비스 레이어 호출
     const savedRoom = await roomService.createRoom({
         title,
@@ -64,9 +58,8 @@ router.post("/:roomid/join", async (req, res) => {
         const { roomid } = req.params;
         const { inviteCode } = req.body;
 
-        // 로그인된 유저 정보가 있다고 가정
-        // 실제 구현 시에는 req.user._id 등에서 가져옴
-        const userId = req.user ? req.user._id : "mockUserId123";
+        const userId = req.user._id; 
+        const userName = req.user.name;
 
         const updatedRoom = await roomService.joinRoom(roomid, inviteCode, userId);
 

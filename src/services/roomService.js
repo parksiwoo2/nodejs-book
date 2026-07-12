@@ -2,8 +2,7 @@ const Room = require("../models/roomModel");
 
 const Book = require("../models/bookModel");
 
-const roomService = {
-    createRoom: async ({ title, bookId, user }) => {
+const createRoom = async ({ title, bookId, user }) => {
 
         const targetbook = await Book.findById(bookId);
 
@@ -33,8 +32,7 @@ const roomService = {
         });
         
         return await newRoom.save();
-    }
-};
+    };
 
 /*
  * @param {String} roomId 
@@ -94,7 +92,7 @@ const joinRoom = async (roomid, user, inviteCode) => {
 };
 
 
- /* 전체방 목록 조회 Service
+/* 전체방 목록 조회 Service
  * 개설된 모든 방을 최신순으로 조회합니다. 
  */
 const getAllRoomList = async () => {

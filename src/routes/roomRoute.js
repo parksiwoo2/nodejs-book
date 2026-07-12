@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const roomService = require("../services/roomService");
 
+const { checkAuth } = require("../middlewares/auth");
 /**
  * 방 생성 API 
  * 최종 주소: POST /api/room
  */
-router.post("/", async (req, res) => {
+router.post("/", checkAuth, async (req, res) => {
     try {
     const { title, bookid } = req.body;
 
@@ -91,10 +92,10 @@ router.post("/:roomid/join", async (req, res) => {
     }
 
 }); 
- /* 방 목록 api
+/* 방 목록 api
  * 최종 주소 : GET /api/room/list
  */
-router.get("/list", async (req, res) => {
+router.get("/list", checkAuth, async (req, res) => {
     try {
         const allRooms = await roomService.getAllRoomList();
 

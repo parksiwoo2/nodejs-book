@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit User</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body data-page="edit-user">
+    <main class="container">
+      <section class="page-header">
+        <p class="eyebrow">Account</p>
+        <h1>Edit User</h1>
+        <p class="description">Update your nickname and username.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>User Info</h2>
+          <a class="text-link" href="/mypage.html">My Page</a>
+        </div>
+
+        <form id="userEditForm" class="form form-panel">
+          <div class="field">
+            <label for="nickname">Nickname</label>
+            <input
+              type="text"
+              id="nickname"
+              name="nickname"
+              placeholder="Enter your nickname"
+              autocomplete="nickname"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter your username"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <button type="submit">Save</button>
+          <p id="userMessage" class="message" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/js/user.js"></script>
+  </body>
+</html>

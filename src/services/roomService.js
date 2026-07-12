@@ -36,15 +36,18 @@ const roomService = {
     }
 };
 
-const getRoomList = async (userId) => {
-    const myRooms = await Room.find({
-        "members.id": userId
-    }).sort({ createdAt: -1});
+/**
+ * 
+ * 전체방 목록 조회 Service
+ * 개설된 모든 방을 최신순으로 조회합니다. 
+ */
+const getAllRoomList = async () => {
+    const allRooms = await Room.find({}).sort({ createdAt: -1});
 
-    return myRooms;
+    return allRooms;
 }
 
 module.exports = {
     createRoom,
-    getRoomList
+    getAllRoomList
 };

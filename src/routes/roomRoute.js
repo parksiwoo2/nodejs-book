@@ -61,13 +61,11 @@ router.post("/", async (req, res) => {
  */
 router.get("/list", async (req, res) => {
     try {
-        const userId = req.user ? req.user._id : "mockUserId123";
-
-        const roomList = await roomService.getRoomList(userId);
+        const allRooms = await roomService.getAllRoomList();
 
         return res.status(200).json({
             success: true,
-            rooms: roomList
+            rooms: allRooms
         });
     }
 
@@ -77,7 +75,7 @@ router.get("/list", async (req, res) => {
             success: false,
             error: {
                 code: error.code || "BAD_REQUEST",
-                message: error.message || "방 목록을 불러오는데 실패했습니다."
+                message: error.message || "전체 방 목록을 불러오는데 실패했습니다."
             }
         });
     }

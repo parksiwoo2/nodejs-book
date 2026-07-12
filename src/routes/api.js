@@ -10,8 +10,8 @@ router.use('/book-ranking', bookRankingRouter);
 const authRouter = require('./authRoute');
 router.use('/login', authRouter);
 
-const registerRouter = require('./userRoute');
-router.use('/register', registerRouter);
+const userRouter = require('./userRoute');
+router.use('/users', userRouter);
 
 const roomRouter = require('./roomRoute');
 router.use('/room', roomRouter);

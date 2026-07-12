@@ -19,4 +19,40 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/me', async (req, res) => {
+  try {
+      const user = await userService.getUserById(req.query.id);
+      return res.json({ success: true, data: user });
+    } catch (err) {
+      return res.status(500).json({ success: false, message: err.message });
+    }
+})
+
+router.patch('/me', async (req, res) => {
+  const { id, updateData } = req.body;
+  if (!id || !updateData) {
+    return res.status(400).json({ success: false, message: 'User ID and update data are required' });
+  }
+  try {
+    const updatedUser = await userService.updateUser(id, updateData);
+    return res.json({ success: true, data: updatedUser });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/me', async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ success: false, message: 'User ID is required' });
+  }
+  try {
+    const deletedUser = await userService.deleteUser(id);
+    return res.json({ success: true, data: deletedUser });
+  }
+  catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;

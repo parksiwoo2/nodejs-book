@@ -16,5 +16,15 @@ const UserService = {
 
   async updateUser(userId, updateData) {
     return await User.findByIdAndUpdate(userId, updateData, { new: true });
+  },
+
+  async getUserById(userId) {
+    return await User.findById(userId);
+  },
+
+  async deleteUser(userId) {
+    return await User.findByIdAndDelete(userId);
   }
 }
+
+module.exports = { userService: UserService };

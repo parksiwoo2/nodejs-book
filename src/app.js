@@ -41,6 +41,14 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'register.html'));
 });
 
+app.get('/mypage', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'mypage.html'));
+});
+
+app.get('/edit-user', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'edit-user.html'));
+});
+
 app.get('/reading', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'reading.html'));
 });

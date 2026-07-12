@@ -54,7 +54,7 @@ router.post("/", checkAuth, async (req, res) => {
  * 부원 가입 api
  * 최종 주소: POST /api/room/:roomid/join
  */
-router.post("/:roomid/join", async (req, res) => {
+router.post("/:roomid/join", checkAuth, async (req, res) => {
     try {
         const { roomid } = req.params;
         const { inviteCode } = req.body;

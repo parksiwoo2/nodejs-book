@@ -125,6 +125,10 @@ h2 {
   gap: 14px;
 }
 
+.form-panel {
+  padding: 20px;
+}
+
 .field {
   display: grid;
   gap: 6px;
@@ -151,6 +155,30 @@ h2 {
 .field select:focus {
   outline: 3px solid rgba(37, 99, 235, 0.18);
   border-color: var(--primary);
+}
+
+.text-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.message {
+  min-height: 24px;
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+
+.message.success {
+  color: #087f5b;
+}
+
+.message.error {
+  color: #c92a2a;
 }
 
 @media (max-width: 640px) {

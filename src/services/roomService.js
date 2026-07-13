@@ -44,18 +44,18 @@ const createRoom = async ({ title, bookId, user }) => {
  * @param {Object} userId 
  * @returns 
  */
-const joinRoom = async (roomid, user, inviteCode) => {
+const joinRoom = async (roomid, userid) => {
     
     const room = await Room.findById(roomid);
 
     if(!room) {
-        const error = new Error("올바르지 않은 초대코드입니다.")
+        const error = new Error("존재하지 않는 방입니다.")
         error.code = "INVITECODE_NOT_FOUND";
-        error.status = 400;
+        error.status = 404;
         throw error;
     }
 
-    const isAlreadyMember = room.member.some(memberId => memberId.toString() === userId.toString());
+    const isAlreadyMember = room.member.some(memberId => memberId.toString() === userid.toString());
     if(isAlreadyMember) {
         const error = new Error("이미 참여한 방입니다.");
         error.code = "ALREADY_JOINED_ROOM";
@@ -63,36 +63,14 @@ const joinRoom = async (roomid, user, inviteCode) => {
         throw error;
     }
 
-    if (inviteCode) {
-        if (room.inviteCode !== inviteCode) {
-            const error = new Error("잘못된 코드를 입력하셨습니다.");
-            error.code = "INVITE_CODE_REQUIRED";
-            error.status = 400;
-            throw error;
-        }
-    }
-
-    else {
-        /*
-        if (room.isPrivate) {
-            const error = new Error("이 방은 초대코드가 있어야만 가입할 수 있습니다.");
-            error.code = "INVITE_CODE_REQUIRED";
-            error.status = 400;
-            throw error;
-        }
-        */
-    }
-
-    room.member.push({
-        _id: user.userId,
-        name: user.userName
-    });
-
-    room.membersCount = room.member.length;
-
+    room.member.push({ userId: userid });
     await room.save();
 
-    return room;
+    return {
+        success: true,
+        roomId: room._id,
+        roomTitle: room.title,
+    }
 };
 /*
  * 방 탈퇴 Service
@@ -130,9 +108,9 @@ const leaveRoom = async ( roomId, userId ) => {
  * 개설된 모든 방을 최신순으로 조회합니다. 
  */
 const getAllRoomList = async () => {
-    const allRooms = await Room.find({}).sort({ createdAt: -1});
+    const Rooms = await Room.find({}).sort({ createdAt: -1 }).select('_id title master book members membersCount createdAt updatedAt');
 
-    return allRooms;
+    return Rooms;
 }
 
 module.exports = {

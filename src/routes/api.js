@@ -22,4 +22,7 @@ router.use('/book-report', bookReportRouter);
 const readingRouter = require('./readingRoute');
 router.use('/reading', readingRouter);
 
+const readinglogRouter = require('./readinglogRoute');
+router.use('/readinglog', readinglogRouter);
+
 module.exports = router;

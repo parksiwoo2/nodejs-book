@@ -9,9 +9,13 @@ const pauseBtn = document.getElementById('pauseBtn');
 const saveBtn = document.getElementById('saveBtn');
 const statusMessage = document.getElementById('statusMessage');
 
-const userIdInput = document.getElementById('userId');
 const bookIdInput = document.getElementById('bookId');
-const bookTitleInput = document.getElementById('bookTitle');
+
+function getAuthHeader() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  return token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+}
 
 function formatTime(totalSeconds) {
   const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
@@ -57,17 +61,21 @@ saveBtn.addEventListener('click', async () => {
   timerCircle.classList.remove('active');
   
   const readingTime = seconds; 
-  const userId = userIdInput.value.trim();
   const bookId = bookIdInput.value.trim();
-  const bookTitle = bookTitleInput.value.trim();
+  const authorization = getAuthHeader();
 
-  if(readingTime === 0) {
+  if (!authorization) {
+    showStatus('로그인이 필요합니다.', true);
+    return;
+  }
+
+  if (readingTime === 0) {
     showStatus('독서 시간이 0초입니다.', true);
     return;
   }
-  
-  if(!userId || !bookId) {
-    showStatus('User ID와 Book ID를 입력해주세요.', true);
+
+  if (!bookId) {
+    showStatus('Book ID를 입력해주세요.', true);
     return;
   }
 
@@ -80,13 +88,12 @@ saveBtn.addEventListener('click', async () => {
     const response = await fetch('/api/reading', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authorization
       },
       body: JSON.stringify({
-        userId,
         bookId,
-        bookTitle,
-        readingTime 
+        readingTime
       })
     });
 
@@ -99,8 +106,12 @@ saveBtn.addEventListener('click', async () => {
       startBtn.textContent = '시작';
       startBtn.disabled = false;
       saveBtn.textContent = '기록 저장';
+    } else if (response.status === 401) {
+      showStatus('로그인이 만료되었거나 유효하지 않습니다. 다시 로그인해 주세요.', true);
+      saveBtn.textContent = '기록 저장';
+      saveBtn.disabled = false;
     } else {
-      showStatus(`오류: ${data.error}`, true);
+      showStatus(`오류: ${data.error || data.message || '저장에 실패했습니다.'}`, true);
       saveBtn.textContent = '기록 저장';
       saveBtn.disabled = false;
     }
@@ -113,7 +124,6 @@ saveBtn.addEventListener('click', async () => {
 
 function showStatus(msg, isError = false) {
   statusMessage.textContent = msg;
-  // 기존 다크모드 색상 대신 style.css 테마에 어울리는 색상 사용
-  statusMessage.style.color = isError ? '#e11d48' : '#059669'; 
+  statusMessage.style.color = isError ? '#e11d48' : '#059669';
   statusMessage.classList.add('show');
 }

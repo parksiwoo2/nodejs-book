@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>책 검색 · 등록</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/book.css" />
+  </head>
+  <body data-page="book">
+    <main class="container">
+      <section class="page-header">
+        <p class="eyebrow">Books</p>
+        <h1>책 검색 · 등록</h1>
+        <p class="description">
+          네이버 책 검색으로 도서를 찾고, 선택한 책을 DB에 등록합니다.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>검색</h2>
+        </div>
+        <form id="bookSearchForm" class="form form-panel">
+          <div class="field">
+            <label for="bookQuery">검색어</label>
+            <input
+              type="text"
+              id="bookQuery"
+              name="q"
+              placeholder="책 제목 또는 저자"
+              required
+            />
+          </div>
+          <button type="submit" id="searchBtn">검색</button>
+        </form>
+      </section>
+
+      <p id="bookMessage" class="message" aria-live="polite"></p>
+
+      <section class="panel panel-stack">
+        <div class="panel-header">
+          <h2>검색 결과</h2>
+          <span id="resultMeta" class="result-meta"></span>
+        </div>
+        <div class="content-box">
+          <div id="bookLoading" class="loading" hidden>검색 중...</div>
+          <ul class="list" id="bookList"></ul>
+          <div id="pagination" class="pagination" hidden>
+            <button type="button" id="prevPageBtn" class="btn-secondary">이전</button>
+            <span id="pageInfo" class="page-info"></span>
+            <button type="button" id="nextPageBtn" class="btn-secondary">다음</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/js/book.js"></script>
+  </body>
+</html>

@@ -132,9 +132,7 @@ router.get("/list", checkAuth, async (req, res) => {
             success: true,
             rooms: allRooms
         });
-    }
-
-    catch (error) {
+    } catch (error) {
         const statusCode = error.status || 400;
         return res.status(statusCode).json({
             success: false,

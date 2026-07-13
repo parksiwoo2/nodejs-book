@@ -45,6 +45,10 @@ app.get('/mypage', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'mypage.html'));
 });
 
+app.get('/readinglog', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'readinglog.html'));
+});
+
 app.get('/edit-user', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'edit-user.html'));
 });

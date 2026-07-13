@@ -1,0 +1,23 @@
+/* 독서 기록 대시보드 페이지 전용 레이아웃 */
+
+.page-header-nav {
+  margin-top: 12px;
+}
+
+.panel-stack {
+  margin-bottom: 24px;
+}
+
+.panel-header--tabs {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.content-box--flush-top {
+  padding-top: 0;
+}
+
+.history-meta .accent {
+  color: var(--primary);
+  font-weight: bold;
+}

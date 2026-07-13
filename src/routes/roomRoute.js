@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const roomService = require("../services/roomService");
 
-/**
+const { checkAuth } = require("../middlewares/auth");
+/*
  * 방 생성 API 
  * 최종 주소: POST /api/room
  */
-router.post("/", async (req, res) => {
+router.post("/", checkAuth, async (req, res) => {
     try {
     const { title, bookid } = req.body;
 
@@ -20,12 +21,6 @@ router.post("/", async (req, res) => {
         }
         });
     }
-
-    // 임시 테스트용 유저 데이터 주입
-    const mockUser = {
-        _id: "65e000000000000000000001", 
-        name: "테스트방장"
-    };
 
     // 2단계 서비스 레이어 호출
     const savedRoom = await roomService.createRoom({
@@ -55,11 +50,53 @@ router.post("/", async (req, res) => {
     }
 });
 
-/**
+/*
+ * 부원 가입 api
+ * 최종 주소: POST /api/room/:roomid/join
+ */
+router.post("/:roomid/join", checkAuth, async (req, res) => {
+    try {
+        const { roomid } = req.params;
+        const { inviteCode } = req.body;
+
+        const userId = req.user._id; 
+        const userName = req.user.name;
+
+        const updatedRoom = await roomService.joinRoom(roomid, inviteCode, userId);
+
+        //성공 (201 Created)
+        return res.status(201).json({
+            success: true,
+            message: "방에 성공적으로 가입했습니다.",
+            data:{
+                Room: {
+                    _id: updatedRoom._id,
+                    title: updatedRoom._title,
+                    master: updatedRoom.master, // { _id, name }
+                    book: updatedRoom.book,     // { _id, title, author }
+                    member: updatedRoom.member, // [ { _id, name } ]
+                    memberCount: updatedRoom.memberCount
+                }
+            }
+        });
+    } catch (error) { 
+
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                    message: error.message || "방 가입에 실패했습니다."
+            }
+        });
+    }
+
+}); 
+/*
  * 방 목록 api
  * 최종 주소 : GET /api/room/list
  */
-router.get("/list", async (req, res) => {
+router.get("/list", checkAuth, async (req, res) => {
     try {
         const allRooms = await roomService.getAllRoomList();
 
@@ -75,10 +112,11 @@ router.get("/list", async (req, res) => {
             success: false,
             error: {
                 code: error.code || "BAD_REQUEST",
-                message: error.message || "전체 방 목록을 불러오는데 실패했습니다."
+                    message: error.message || "방 목록 조회에 ."
             }
         });
     }
-});
+
+}); 
 
 module.exports = router;

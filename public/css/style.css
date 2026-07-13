@@ -181,6 +181,90 @@ h2 {
   color: #c92a2a;
 }
 
+.loading {
+  padding: 16px 0;
+  color: var(--text-muted);
+}
+
+/* 통계 카드 */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 40px;
+}
+
+.stat-value {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 18px;
+  color: var(--text-muted);
+  font-weight: bold;
+}
+
+/* 탭 */
+.tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 24px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* 리스트 아이템 보조 텍스트 */
+.book-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.history-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
 @media (max-width: 640px) {
   .container {
     width: min(100% - 24px, 960px);

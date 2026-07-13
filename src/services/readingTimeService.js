@@ -1,11 +1,18 @@
 const User = require('../models/userModel');
+const Book = require('../models/bookModel');
 
-const recordTime = async (userId, bookId, bookTitle, readingTime) => {
+const recordTime = async (userId, bookId, readingTime) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }
+
+    const book = await Book.findById(bookId);
+    if (!book) {
+      throw new Error('Book not found');
+    }
+    const bookTitle = book.title;
 
     // 유저의 전체 총 독서 시간(totalReadingTime) 업데이트
     user.totalReadingTime = (user.totalReadingTime || 0) + readingTime;

@@ -33,6 +33,10 @@ app.get('/book-ranking', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'book-ranking.html'));
 });
 
+app.get('/book', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'book.html'));
+});
+
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
 });
@@ -43,6 +47,10 @@ app.get('/register', (req, res) => {
 
 app.get('/mypage', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'mypage.html'));
+});
+
+app.get('/readinglog', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'readinglog.html'));
 });
 
 app.get('/edit-user', (req, res) => {

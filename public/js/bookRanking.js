@@ -3,7 +3,18 @@ const loadRankingBtn = document.getElementById('loadRankingBtn');
 const rankingTableBody = document.getElementById('rankingTableBody');
 const loading = document.getElementById('loading');
 const errorMessage = document.getElementById('errorMessage');
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    const headers = { 'Content-Type': 'application/json' };
 
+    if (token) {
+      headers.Authorization = token.startsWith('Bearer ')
+        ? token
+        : `Bearer ${token}`;
+    }
+
+    return headers;
+  };
 async function loadBookRanking() {
   const period = periodSelect.value;
   const page = 1;
@@ -15,8 +26,10 @@ async function loadBookRanking() {
 
   try {
     const response = await fetch(
-      `/api/book-ranking?period=${period}&page=${page}&limit=${limit}`
-    );
+      `/api/book-ranking?period=${period}&page=${page}&limit=${limit}`,
+      {
+        headers: getAuthHeaders()
+      });
 
     const data = await response.json();
 

@@ -181,6 +181,14 @@ h2 {
   color: #c92a2a;
 }
 
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 .loading {
   padding: 16px 0;
   color: var(--text-muted);

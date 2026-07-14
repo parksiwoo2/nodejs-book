@@ -1,17 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const { checkAuth } = require('../middlewares/auth');
 
-const mainRouter = require('./mainRoute');
-const bookRankingRouter = require('./bookRankingRoute');
 
-router.use('/main', mainRouter);
-router.use('/book-ranking', bookRankingRouter);
 
 const authRouter = require('./authRoute');
 router.use('/login', authRouter);
 
 const userRouter = require('./userRoute');
 router.use('/users', userRouter);
+
+router.use(checkAuth);
+
+const mainRouter = require('./mainRoute');
+router.use('/main', mainRouter);
+
+const bookRankingRouter = require('./bookRankingRoute');
+router.use('/book-ranking', bookRankingRouter);
 
 const roomRouter = require('./roomRoute');
 router.use('/room', roomRouter);

@@ -15,7 +15,7 @@ const UserService = {
   },
 
   async updateUser(userId, updateData) {
-    return await User.findByIdAndUpdate(userId, updateData, { new: true });
+    return await User.findByIdAndUpdate(userId, updateData, { returnDocument: 'after' });
   },
 
   async getUserById(userId) {

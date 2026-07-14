@@ -24,9 +24,7 @@ const getUserIdFromToken = () => {
   }
 };
 
-const getUserId = () => {
-  return localStorage.getItem('userId') || getUserIdFromToken();
-};
+const getUserId = getUserIdFromToken;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -55,7 +53,6 @@ const fetchUser = async () => {
     throw new Error(result.message || 'Could not load user.');
   }
 
-  localStorage.setItem('userId', result.data._id);
   return result.data;
 };
 

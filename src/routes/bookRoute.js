@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bookService = require("../services/bookService");
-const { checkAuth } = require("../middlewares/auth");
 
-// 책 API 전체 유저 권한 필요
-router.use(checkAuth);
 
 // 서비스 에러 → 공통 에러 응답 (bookReportRoute와 동일 패턴)
 const sendError = (res, error) => {

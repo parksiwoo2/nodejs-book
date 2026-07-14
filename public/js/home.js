@@ -47,7 +47,17 @@ document.querySelectorAll('[data-goto]').forEach((el) => {
 // ==================== 홈 ====================
 async function loadRecent() {
   const box = $('recentReports');
-  const data = await api('/book-report?page=1&limit=5');
+  const [data, roomData, logData] = await Promise.all([
+    api('/book-report?page=1&limit=5'),
+    api('/room/list'),
+    api('/readinglog')
+  ]);
+
+  // 스탯 타일
+  if (logData) $('stTime').textContent = fmtDuration(logData.totalReadingTime || 0);
+  if (data) $('stReports').textContent = `${data.total.toLocaleString()}편`;
+  if (roomData) $('stRooms').textContent = `${((roomData.rooms || roomData) || []).length.toLocaleString()}개`;
+
   if (!data) return;
 
   box.innerHTML = data.items.length
@@ -134,9 +144,13 @@ async function loadReportDetail(id) {
   if (!r) return;
   currentReport = r;
 
+  $('dView').style.display = 'block';
+  $('dEditForm').style.display = 'none';
+
   $('dTitle').textContent = r.title;
-  $('dMeta').textContent =
-    `📖 ${r.book.title} (${r.book.author}) · ✍️ ${r.user.name} · ${new Date(r.createdDt).toLocaleDateString('ko-KR')}`;
+  $('dMeta').innerHTML =
+    `📖 ${esc(r.book.title)} (${esc(r.book.author)}) · ✍️ ${esc(r.user.name)} · ${new Date(r.createdDt).toLocaleDateString('ko-KR')}` +
+    (r.room && r.room.title ? ` · <span class="badge">🏠 ${esc(r.room.title)}</span>` : '');
   $('dContents').textContent = r.contents;
 
   // 작성자 본인일 때만 수정/삭제 노출 (서버가 재검증)
@@ -146,7 +160,7 @@ async function loadReportDetail(id) {
 
   $('commentList').innerHTML = r.comments.length
     ? r.comments.map((c) => `
-        <div class="comment-item">
+        <div class="comment-item" data-cid="${c._id}">
           <span class="writer">${esc(c.writer.name)}</span>
           <span>${esc(c.content)}</span>
           ${myUserId && c.writer._id === myUserId ? `
@@ -190,15 +204,27 @@ $('writeForm').addEventListener('submit', async (e) => {
   loadReports();
 });
 
-$('btnEditReport').addEventListener('click', async () => {
-  const title = prompt('새 제목 (취소하면 유지)', currentReport.title);
-  const contents = prompt('새 내용 (취소하면 유지)', currentReport.contents);
-  if (title === null && contents === null) return;
+// 인라인 수정: 보기 영역 숨기고 폼에 기존 값 채워서 표시
+$('btnEditReport').addEventListener('click', () => {
+  $('deTitle').value = currentReport.title;
+  $('deContents').value = currentReport.contents;
+  $('dView').style.display = 'none';
+  $('dEditForm').style.display = 'block';
+  $('deTitle').focus();
+});
+
+$('btnEditCancel').addEventListener('click', () => {
+  $('dEditForm').style.display = 'none';
+  $('dView').style.display = 'block';
+});
+
+$('dEditForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
   const updated = await api(`/book-report/${currentReport._id}`, {
     method: 'PATCH',
     body: JSON.stringify({
-      ...(title !== null && { title }),
-      ...(contents !== null && { contents })
+      title: $('deTitle').value,
+      contents: $('deContents').value
     })
   });
   if (updated) loadReportDetail(currentReport._id);
@@ -221,15 +247,32 @@ $('commentForm').addEventListener('submit', async (e) => {
   loadReportDetail(currentReport._id);
 });
 
-async function editComment(commentId) {
+// 댓글 인라인 수정: 그 자리에서 입력창으로 전환 (prompt 대신)
+function editComment(commentId) {
   const c = currentReport.comments.find((x) => x._id === commentId);
-  const content = prompt('댓글 수정', c ? c.content : '');
-  if (content === null || !content.trim()) return;
-  const updated = await api(`/book-report/${currentReport._id}/comments/${commentId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ content })
+  const row = document.querySelector(`.comment-item[data-cid="${commentId}"]`);
+  if (!c || !row) return;
+
+  row.innerHTML = `
+    <form class="toolbar" style="margin:0">
+      <input type="text" style="flex:1;min-width:200px" required>
+      <button type="submit" class="btn-sm">저장</button>
+      <button type="button" class="btn-sm btn-ghost" data-cancel>취소</button>
+    </form>`;
+  const input = row.querySelector('input');
+  input.value = c.content; // XSS 안전하게 값은 JS로 주입
+  input.focus();
+
+  row.querySelector('[data-cancel]').addEventListener('click', () => loadReportDetail(currentReport._id));
+  row.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!input.value.trim()) return;
+    const updated = await api(`/book-report/${currentReport._id}/comments/${commentId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ content: input.value })
+    });
+    if (updated) loadReportDetail(currentReport._id);
   });
-  if (updated) loadReportDetail(currentReport._id);
 }
 
 async function deleteComment(commentId) {
@@ -281,7 +324,7 @@ async function loadRooms() {
           <p class="meta">📖 ${esc(r.book?.title ?? '책 미지정')}${r.book?.author ? ` (${esc(r.book.author)})` : ''}</p>
           <p class="meta">👑 ${esc(r.master?.name ?? '?')} · 👥 ${r.memberCount ?? (r.members ? r.members.length : '?')}명</p>
           <p class="toolbar" style="margin:12px 0 0">
-            <span class="badge">독후감 보기 →</span>
+            <span class="badge">방 입장 →</span>
             ${memberArea}
           </p>
         </div>`;
@@ -335,9 +378,13 @@ async function openRoomPage(roomId) {
   $('rpMaster').textContent =
     `👑 방장 ${room.master?.name ?? '?'} · 👥 ${room.memberCount ?? (room.members || []).length}명 · ${new Date(room.createdAt).toLocaleDateString('ko-KR')} 개설`;
 
+  // 닉네임 중복 가능(unique 아님) → _id 끝 4자리 태그로 동명이인 구분
   $('rpMembers').innerHTML = (room.members || []).length
-    ? room.members.map((m) =>
-        `<span class="badge" style="margin:0 6px 6px 0">${m._id === room.master?._id ? '👑 ' : ''}${esc(m.name ?? '?')}</span>`).join('')
+    ? room.members.map((m) => {
+        const tag = m._id ? `<small style="opacity:.6">#${String(m._id).slice(-4)}</small>` : '';
+        const me = m._id === myUserId ? ' (나)' : '';
+        return `<span class="badge" style="margin:0 6px 6px 0">${m._id === room.master?._id ? '👑 ' : ''}${esc(m.name ?? '?')}${tag}${me}</span>`;
+      }).join('')
     : '<span class="meta">멤버 정보 없음</span>';
 
   $('rpActions').innerHTML = isMaster
@@ -395,17 +442,45 @@ function setRoomMode(room) {
 }
 
 $('btnRoomBack').addEventListener('click', () => showTab('rooms'));
+
+// 방 안에서 바로 독후감 쓰기
+function currentRoomId() {
+  return (location.hash.match(/^#room-(.+)$/) || [])[1];
+}
+
 $('btnRoomWrite').addEventListener('click', () => {
-  const roomId = (location.hash.match(/^#room-(.+)$/) || [])[1];
-  const room = roomsCache[roomId];
-  if (!room || !room.book?._id) {
-    alert('이 모임은 책 정보가 없어 독후감을 쓸 수 없어요.');
+  const room = roomsCache[currentRoomId()];
+  const isMember = room && (room.members || []).some((m) => m._id === myUserId);
+  if (!isMember) {
+    alert('방에 참여해야 독후감을 쓸 수 있어요.');
     return;
   }
-  setRoomMode(room);
-  showTab('reports', 'reports', true); // 목록 자동 로드 생략 (작성 폼으로 바로)
-  updateRoomBanner();
-  reportShow('write');
+  $('rpWriteBox').style.display = 'block';
+  $('rpwTitle').focus();
+});
+
+$('rpWriteCancel').addEventListener('click', () => {
+  $('rpWriteBox').style.display = 'none';
+});
+
+$('rpWriteForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const roomId = currentRoomId();
+  if (!roomId) return;
+
+  const created = await api('/book-report', {
+    method: 'POST',
+    body: JSON.stringify({
+      title: $('rpwTitle').value,
+      contents: $('rpwContents').value,
+      roomId // 서버가 멤버 확인 + 방의 책으로 자동 지정
+    })
+  });
+  if (!created) return;
+
+  e.target.reset();
+  $('rpWriteBox').style.display = 'none';
+  openRoomPage(roomId); // 방 페이지 새로고침 (목록 갱신)
 });
 
 $('createForm').addEventListener('submit', async (e) => {
@@ -423,7 +498,10 @@ $('createForm').addEventListener('submit', async (e) => {
   e.target.reset();
   roomPicker.clear();
   $('roomCreateBox').style.display = 'none';
-  loadRooms();
+  await loadRooms();
+  // 만든 방으로 바로 입장
+  const newRoom = created.Room || created;
+  if (newRoom && newRoom._id) openRoomPage(newRoom._id);
 });
 
 $('btnShowCreate').addEventListener('click', () => {
@@ -560,6 +638,14 @@ async function loadRanking() {
 
 $('rankPeriod').addEventListener('change', loadRanking);
 $('btnRankRefresh').addEventListener('click', loadRanking);
+
+// 타이머 작동 중 페이지 이탈 경고 (기록 유실 방지)
+window.addEventListener('beforeunload', (e) => {
+  if (timerRunning || timerSeconds > 0) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 
 // ==================== 시작 ====================
 // 상단 네비(/home#reports 등)로 진입·이동해도 탭이 따라가도록

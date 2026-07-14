@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>독서 기록장</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
   <link rel="stylesheet" href="/css/home.css">
 </head>
 <body data-page="home">
@@ -17,6 +18,21 @@
 
     <!-- ==================== 홈 ==================== -->
     <section id="tab-home" class="app-section active">
+      <div class="stat-row">
+        <div class="stat-tile">
+          <p class="stat-value" id="stTime">–</p>
+          <p class="stat-label">⏱️ 내 독서 시간</p>
+        </div>
+        <div class="stat-tile">
+          <p class="stat-value" id="stReports">–</p>
+          <p class="stat-label">✏️ 전체 독후감</p>
+        </div>
+        <div class="stat-tile">
+          <p class="stat-value" id="stRooms">–</p>
+          <p class="stat-label">🏠 독서 모임</p>
+        </div>
+      </div>
+
       <div class="card-grid" style="margin-bottom:24px">
         <a class="card clickable" href="#reports" data-goto="reports">
           <h3>✏️ 독후감</h3>
@@ -94,14 +110,31 @@
         <button class="btn-sm btn-ghost" id="btnBack">◀ 목록으로</button>
         <div class="panel" style="margin-top:14px">
           <div class="content-box">
-            <h2 id="dTitle" style="margin-bottom:4px"></h2>
-            <p class="meta" id="dMeta"></p>
-            <hr class="divider">
-            <p class="report-contents" id="dContents"></p>
-            <div class="toolbar" style="margin:0">
-              <button class="btn-sm btn-ghost" id="btnEditReport">수정</button>
-              <button class="btn-sm btn-danger" id="btnDeleteReport">삭제</button>
+            <div id="dView">
+              <h2 id="dTitle" style="margin-bottom:4px"></h2>
+              <p class="meta" id="dMeta"></p>
+              <hr class="divider">
+              <p class="report-contents" id="dContents"></p>
+              <div class="toolbar" style="margin:0">
+                <button class="btn-sm btn-ghost" id="btnEditReport">수정</button>
+                <button class="btn-sm btn-danger" id="btnDeleteReport">삭제</button>
+              </div>
             </div>
+            <!-- 인라인 수정 폼 (prompt 대신) -->
+            <form id="dEditForm" class="form" style="display:none">
+              <div class="field">
+                <label for="deTitle">제목</label>
+                <input type="text" id="deTitle" required>
+              </div>
+              <div class="field">
+                <label for="deContents">내용</label>
+                <textarea id="deContents" rows="8" style="width:100%" required></textarea>
+              </div>
+              <div class="toolbar" style="margin:0">
+                <button type="submit">저장</button>
+                <button type="button" class="btn-ghost" id="btnEditCancel">취소</button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -162,6 +195,27 @@
           <hr class="divider">
           <p style="margin:0 0 8px;font-weight:700;font-size:13.5px">멤버</p>
           <p id="rpMembers" style="margin:0"></p>
+        </div>
+      </div>
+
+      <!-- 방 안 독후감 작성 폼 -->
+      <div class="panel" id="rpWriteBox" style="display:none;margin-bottom:20px">
+        <div class="panel-header"><h2>✏️ 독후감 쓰기</h2></div>
+        <div class="content-box">
+          <form id="rpWriteForm" class="form">
+            <div class="field">
+              <label for="rpwTitle">제목</label>
+              <input type="text" id="rpwTitle" placeholder="독후감 제목" required>
+            </div>
+            <div class="field">
+              <label for="rpwContents">내용</label>
+              <textarea id="rpwContents" rows="6" placeholder="함께 읽은 책, 어땠나요?" style="width:100%" required></textarea>
+            </div>
+            <div class="toolbar" style="margin:0">
+              <button type="submit">등록</button>
+              <button type="button" class="btn-ghost" id="rpWriteCancel">취소</button>
+            </div>
+          </form>
         </div>
       </div>
 

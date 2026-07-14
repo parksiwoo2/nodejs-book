@@ -1,9 +1,11 @@
 const Room = require("../models/roomModel");
-
 const Book = require("../models/bookModel");
+const User = require("../models/userModel");
 
-/*
- *방생성 
+/**
+ * 방생성 Service
+ * @param {Object} param0 - 방 생성에 필요한 정보
+ * @param {String} param0.title - 방 제목 
  */
 
 const createRoom = async ({ title, bookId, user }) => {
@@ -33,6 +35,10 @@ const createRoom = async ({ title, bookId, user }) => {
                 name: user.nickname,
             }],
             memberCount: 1
+        });
+
+        await User.findByIdAndUpdate(user._id, {
+            $push: { rooms: newRoom._id }
         });
 
         return newRoom;
@@ -75,6 +81,10 @@ const joinRoom = async (roomId, user) => {
 
     await room.save();
 
+    await User.findByIdAndUpdate(user._id, {
+        $push: { rooms: room._id }
+    });
+
     return {
         _id: room._id,
         title: room.title,
@@ -99,7 +109,7 @@ const leaveRoom = async ( roomId, userId ) => {
         throw error;
     }
 
-    const isMember = room.members.some(memberId => memberId.toString() === userId.toString());
+    const isMember = room.members.some(m => m._id.toString() === userId.toString());
     if (!isMember) {
         const error = new Error("참여하고 있지 않은 방입니다.");
         error.code = "NOT_A_MEMBER";
@@ -107,9 +117,13 @@ const leaveRoom = async ( roomId, userId ) => {
         throw error;
     }
     
-    room.member = room.members.filter(memberId => memberId.toString() !== userId.toString());
+    room.members = room.members.filter(member => member._id.toString() !== userId.toString());
 
-    room.membersCount = room.member.length;
+    room.memberCount = room.members.length;
+
+    await User.findByIdAndUpdate(userId, {
+        $pull: { rooms: room._id }
+    });
 
     await room.save();
 
@@ -133,13 +147,18 @@ const deleteRoom = async (roomid, userId) => {
         throw error;
     }
 
-    if (room.master.id.toString() !== userId.toString()) {
+    if (room.master._id.toString() !== userId.toString()) {
         const error = new Error("방장만 방을 삭제할 수 있습니다.");
         error.code = "NOT_A_MASTER";
         error.status = 400;
         throw error;
     }
-
+    const memberIds = room.members.map(member => member._id);
+    await User.updateMany(
+        { _id: { $in: memberIds } },
+        { $pull: { rooms: room._id } }
+    );
+    
     await Room.findByIdAndDelete(roomid);
 
     return true;

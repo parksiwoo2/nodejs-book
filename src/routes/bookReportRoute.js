@@ -21,14 +21,15 @@ const sendError = (res, error) => {
 };
 
 /**
- * 독후감 목록 조회
- * 최종 주소: GET /api/book-report?page=1&limit=10
+ * 독후감 목록 조회 (roomId를 주면 그 방에서 작성된 독후감만)
+ * 최종 주소: GET /api/book-report?page=1&limit=10&roomId=xxx
  */
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const data = await bookReportService.listReports({ page, limit });
+    const { roomId } = req.query;
+    const data = await bookReportService.listReports({ page, limit, roomId });
     return res.status(200).json({ success: true, data });
   } catch (error) {
     return sendError(res, error);
@@ -41,14 +42,15 @@ router.get("/", async (req, res) => {
  */
 router.post("/", async (req, res) => {
   try {
-    const { title, bookId, contents } = req.body;
+    const { title, bookId, roomId, contents } = req.body;
 
-    if (!title || !bookId || !contents) {
+    // 방 독후감(roomId)이면 책은 방의 책으로 자동 지정되므로 bookId 생략 가능
+    if (!title || !contents || (!bookId && !roomId)) {
       return res.status(400).json({
         success: false,
         error: {
           code: "INVALID_INPUT",
-          message: "제목, 책, 내용은 필수 입력값입니다."
+          message: "제목, 책(또는 방), 내용은 필수 입력값입니다."
         }
       });
     }
@@ -56,6 +58,7 @@ router.post("/", async (req, res) => {
     const report = await bookReportService.createReport({
       title,
       bookId,
+      roomId,
       contents,
       user: toUserSnapshot(req.user)
     });

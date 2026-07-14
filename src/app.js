@@ -29,6 +29,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'main.html'));
 });
 
+// 통합 페이지 (홈/독후감/독서 모임 탭)
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'home.html'));
+});
+
 app.get('/room', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'room.html'));
 });

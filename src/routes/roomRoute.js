@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createRoom, joinRoom, leaveRoom, getAllRoomList} = require("../services/roomService");
+const { createRoom, joinRoom, leaveRoom, getAllRoomList, getRoomDetail } = require("../services/roomService");
 
 const { checkAuth } = require("../middlewares/auth");
 /*
@@ -9,10 +9,10 @@ const { checkAuth } = require("../middlewares/auth");
  */
 router.post("/", checkAuth, async (req, res) => {
     try {
-    const { title, bookid } = req.body;
+    const { title, bookId } = req.body;
 
     // 실패 대응 (400 Bad Request) - 필수 인자 누락
-    if (!title || !bookid) {
+    if (!title || !bookId) {
         return res.status(400).json({
         success: false,
         error: {
@@ -22,11 +22,10 @@ router.post("/", checkAuth, async (req, res) => {
         });
     }
 
-    // 2단계 서비스 레이어 호출
-    const savedRoom = await roomService.createRoom({
+    const savedRoom = await createRoom({
         title,
-        bookId: bookid,
-        user: mockUser
+        bookId,
+        user: req.user
     });
 
     // 성공 응답 (201 Created)
@@ -39,8 +38,7 @@ router.post("/", checkAuth, async (req, res) => {
     });
 
     } catch (error) {
-    // 서비스에서 발생한 에러(BOOK_NOT_FOUND 등) 처리
-    return res.status(error.status || 500).json({
+    return res.status(error.status || error.statusCode || 500).json({
         success: false,
         error: {
         code: error.code || "SERVER_ERROR",
@@ -58,9 +56,9 @@ router.delete("/:roomid/leave", checkAuth, async (req, res) => {
     try {
         const { roomid } = req.params;
 
-        const userid = req.user ? req.user._id : "mockUserId1234";
+        const userid = req.user._id;
 
-        await roomService.leaveRoom(roomid, userid);
+        await leaveRoom(roomid, userid);
 
         return res.status(200).json({
             success: true, 
@@ -82,40 +80,82 @@ router.delete("/:roomid/leave", checkAuth, async (req, res) => {
 });
 
 /*
+ * 방 목록 api
+ * 최종 주소 : GET /api/room/list
+ */
+router.get("/list", checkAuth, async (req, res) => {
+    try {
+        const rooms = await getAllRoomList();
+
+        return res.status(200).json({
+            success: true,
+            rooms
+        });
+    } catch (error) {
+        const statusCode = error.status || error.statusCode || 500;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "SERVER_ERROR",
+                message: error.message || "방 목록 조회에 실패했습니다."
+            }
+        });
+    }
+});
+
+/*
+ * 방 상세 조회 api
+ * 최종 주소 : GET /api/room/:roomid
+ */
+router.get("/:roomid", checkAuth, async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        const userId = req.user._id;
+
+        const roomData = await getRoomDetail(roomid, userId);
+
+        return res.status(200).json({
+            success: true,
+            Room: roomData
+        });
+    } catch (error) {
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "방 상세 조회에 실패했습니다."
+            }
+        });
+    }
+});
+/*
  * 부원 가입 api
  * 최종 주소: POST /api/room/:roomid/join
  */
 router.post("/:roomid/join", checkAuth, async (req, res) => {
     try {
         const { roomid } = req.params;
-        const userId = req.user._id;
 
-        const result = await joinRoom({ roomid, userId });
+        const updatedRoom = await joinRoom(roomid, req.user);
 
-        //성공 (201 Created)
-res.status(200).json(result);
-    } catch (error) {
-        // 이미 가입되었거나 방이 없을 때의 에러 메시지를 프론트로 전달
-        res.status(error.statusCode || 500).json({ message: error.message });
-    }
-});
-
-/*
- * 방 목록 api
- * 최종 주소 : GET /api/room/list
- */
-router.get("/list", checkAuth, async (req, res) => {
-    try {
-        const Rooms = await getAllRoomList();
-
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
-            rooms: Rooms
+            message: "방에 성공적으로 가입했습니다.",
+            data: {
+                Room: updatedRoom
+            }
         });
-    }
-
-    catch (error) {
-        res.status(error.statusCode || 500).json({ message: error.message });
+    } catch (error) {
+        const statusCode = error.status || error.statusCode || 500;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "SERVER_ERROR",
+                message: error.message || "방 가입에 실패했습니다."
+            }
+        });
     }
 });
 

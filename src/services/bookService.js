@@ -82,6 +82,17 @@ const bookService = {
     }
     const book = await Book.create({ title, author });
     return { book, created: true };
+  },
+
+  /**
+   * DB에 등록된 책 목록 조회 (방 생성 시 선정 도서 선택용)
+   * 최신 등록 순 — _id 내림차순
+   */
+  listBooks: async () => {
+    return await Book.find({})
+      .sort({ _id: -1 })
+      .select('_id title author')
+      .lean();
   }
 };
 

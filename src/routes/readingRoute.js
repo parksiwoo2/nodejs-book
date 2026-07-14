@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const readingService = require('../services/readingTimeService');
-const { checkAuth } = require('../middlewares/auth');
 
-router.post('/', checkAuth, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { bookId, readingTime } = req.body;
     const userId = req.user._id;

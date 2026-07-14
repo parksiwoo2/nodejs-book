@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bookReportService = require("../services/bookReportService");
-const { checkAuth } = require("../middlewares/auth");
 
-// 독후감 API 전체가 유저 권한 필요 — JWT 토큰 검증 후 req.user에 유저 정보 주입
-router.use(checkAuth);
 
 // User 모델에 name 필드가 없어 nickname을 name 스냅샷으로 사용
 const toUserSnapshot = (user) => ({ _id: user._id, name: user.nickname });

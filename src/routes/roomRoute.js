@@ -138,7 +138,7 @@ router.get("/list", checkAuth, async (req, res) => {
             success: false,
             error: {
                 code: error.code || "BAD_REQUEST",
-                    message: error.message || "방 목록 조회에 실패했습니다."
+                message: error.message || "방 목록 조회에 실패했습니다."
             }
         });
     }

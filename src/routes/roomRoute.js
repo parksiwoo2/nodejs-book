@@ -9,7 +9,7 @@ const {
     deleteRoom
 } = require("../services/roomService");
 
-const checkAuth = require("../middlewares/checkAuth");
+const { checkAuth } = require("../middlewares/auth");
 /*
  * 방 생성 API 
  * 최종 주소: POST /api/room
@@ -93,7 +93,7 @@ router.delete("/:roomid", checkAuth, async (req, res) => {
     try {
         const { roomid } = req.params;
         const userId = req.user._id;
-        
+
         await deleteRoom(roomid, userId);
 
         return res.status(200).json({

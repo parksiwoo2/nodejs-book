@@ -46,7 +46,66 @@ router.post("/", async (req, res) => {
     });
     }
 });
-/**
+
+/*
+ * 부원 가입 api
+ * 최종 주소: POST /api/room/:roomid/join
+ */
+router.post("/:roomid/join", async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        const updatedRoom = await joinRoom(roomid, req.user);
+
+        return res.status(201).json({
+            success: true,
+            message: "방에 성공적으로 가입했습니다.",
+            data: {
+                Room: updatedRoom
+            }
+        });
+    } catch (error) {
+        const statusCode = error.status || error.statusCode || 500;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "SERVER_ERROR",
+                message: error.message || "방 가입에 실패했습니다."
+            }
+        });
+    }
+});
+
+/*
+ * 방 폭파(삭제) api
+ * 최종 주소 : DELETE /api/room/:roomid
+ */
+
+router.delete("/:roomid", async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        const userId = req.user ? req.user._id : "mockUserId1234";
+
+        await roomService.deleteRoom(roomid, userId);
+
+        return res.status(200).json({
+            success: true,
+            message: "성공적으로 방이 삭제되었습니다."
+        });
+    } catch (error) {
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "방 삭제에 실패했습니다."
+            }
+        });
+    }
+});
+
+/*
  * 방탈퇴 api
  * 최종 주소: DELETE /api/room/:roomid/leave
  */
@@ -129,33 +188,6 @@ router.get("/:roomid", async (req, res) => {
         });
     }
 });
-/*
- * 부원 가입 api
- * 최종 주소: POST /api/room/:roomid/join
- */
-router.post("/:roomid/join", async (req, res) => {
-    try {
-        const { roomid } = req.params;
 
-        const updatedRoom = await joinRoom(roomid, req.user);
-
-        return res.status(201).json({
-            success: true,
-            message: "방에 성공적으로 가입했습니다.",
-            data: {
-                Room: updatedRoom
-            }
-        });
-    } catch (error) {
-        const statusCode = error.status || error.statusCode || 500;
-        return res.status(statusCode).json({
-            success: false,
-            error: {
-                code: error.code || "SERVER_ERROR",
-                message: error.message || "방 가입에 실패했습니다."
-            }
-        });
-    }
-});
 
 module.exports = router;

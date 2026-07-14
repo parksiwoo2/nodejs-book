@@ -38,7 +38,7 @@ const createRoom = async ({ title, bookId, user }) => {
         return newRoom;
     };
 
-/*
+/**
  * 방 가입
  * @param {String} roomId
  * @param {Object} user - JWT 인증된 User 문서 (_id, nickname 등)
@@ -84,6 +84,7 @@ const joinRoom = async (roomId, user) => {
         memberCount: room.memberCount
     };
 };
+
 /*
  * 방 탈퇴 Service
  */
@@ -115,6 +116,41 @@ const leaveRoom = async ( roomId, userId ) => {
     return true;
     };
 
+/**
+ * 방 삭제 Service
+ * @param {String} roomid 
+ * @param {String} userId 
+ * @returns 
+ */
+const deleteRoom = async (roomid, userId) => {
+
+    const room= await Room.findById(roomid)
+
+    if(!room) {
+        const error = new Error("존재하지 않는 방입니다.");
+        error.code = "ROOM_NOT_FOUND";
+        error.status = 400;
+        throw error;
+    }
+
+    if (room.master.id.toString() !== userId.toString()) {
+        const error = new Error("방장만 방을 삭제할 수 있습니다.");
+        error.code = "NOT_A_MASTER";
+        error.status = 400;
+        throw error;
+    }
+
+    await Room.findByIdAndDelete(roomid);
+
+    return true;
+};
+
+/**
+ * 방 상세 정보 조회 Service
+ * @param {String} roomId 
+ * @param {String} userId 
+ * @returns 
+ */    
 const getRoomDetail = async (roomId, userId) => {
 
     const room = await Room.findById(roomId);
@@ -139,7 +175,7 @@ const getRoomDetail = async (roomId, userId) => {
 
 /*
  * 전체방 목록 조회 Service
- * 개설된 모든 방을 최신순으로 조회합니다.
+ * 개설된 모든 방을 최신순으로 조회합니다. 
  */
 const getAllRoomList = async () => {
     return await Room.find({})
@@ -149,6 +185,7 @@ const getAllRoomList = async () => {
 
 module.exports = {
     createRoom,
+    deleteRoom,
     getRoomDetail,
     leaveRoom,
     joinRoom,

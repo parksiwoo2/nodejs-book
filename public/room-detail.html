@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방 상세</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/room.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="room-nav room-nav-minimal" aria-label="페이지 이동">
+      <a class="text-link" href="/room">방 목록</a>
+    </nav>
+
+    <div id="roomDetailLoading" class="loading" hidden>불러오는 중…</div>
+
+    <div id="roomDetailError" class="panel room-detail-state" hidden>
+      <div class="content-box">
+        <p id="roomDetailErrorMessage" class="room-error"></p>
+        <p class="room-detail-actions">
+          <a id="roomDetailErrorLink" class="text-link" href="/room">방 목록으로</a>
+        </p>
+      </div>
+    </div>
+
+    <div id="roomDetailContent" hidden>
+      <header class="page-header">
+        <p class="eyebrow">Room Detail</p>
+        <h1 id="roomDetailTitle">-</h1>
+        <p class="description" id="roomDetailSummary">-</p>
+      </header>
+
+      <section class="panel room-detail-panel">
+        <div class="panel-header">
+          <h2>방 정보</h2>
+        </div>
+        <div class="content-box">
+          <ul class="list">
+            <li class="list-item">
+              <strong>개설자</strong>
+              <p id="roomDetailMaster">-</p>
+            </li>
+            <li class="list-item">
+              <strong>선정 도서</strong>
+              <p id="roomDetailBook">-</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel room-detail-panel">
+        <div class="panel-header">
+          <h2>멤버 목록</h2>
+        </div>
+        <div class="content-box">
+          <ul id="roomDetailMembers" class="list room-member-list"></ul>
+        </div>
+      </section>
+
+      <div class="room-detail-leave">
+        <button type="button" id="leaveRoomShellBtn" class="btn-leave-shell">
+          탈퇴하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/room-detail.js"></script>
+</body>
+</html>

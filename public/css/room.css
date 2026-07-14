@@ -1,0 +1,220 @@
+.room-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.room-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+}
+
+.room-logout-btn {
+  padding: 8px 12px;
+  background: var(--surface-muted);
+  color: var(--text);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.room-logout-btn:hover {
+  background: var(--border);
+}
+
+/* 부가 기능 네비 — 본문 아래, 주요 메뉴와 시각적으로 분리 */
+.room-nav-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.room-nav-secondary-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.room-nav-secondary .text-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.room-nav-secondary .text-link:hover {
+  color: var(--primary);
+}
+
+.room-content {
+  min-height: 120px;
+}
+
+.room-list {
+  display: grid;
+  gap: 14px;
+}
+
+.room-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.room-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
+}
+
+.room-card:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.28);
+  outline-offset: 2px;
+}
+
+.room-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.room-card-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.room-card-meta {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.room-card-meta:last-child {
+  margin-bottom: 0;
+}
+
+.room-card-actions {
+  flex-shrink: 0;
+}
+
+.room-card-actions .join-btn {
+  white-space: nowrap;
+}
+
+.room-empty,
+.room-error {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.room-error {
+  color: #c92a2a;
+}
+
+/* 방 만들기 */
+.room-create-panel {
+  margin-bottom: 24px;
+}
+
+.room-create-hint {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.room-create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.room-create-actions #reloadBooksBtn {
+  background: var(--surface-muted);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.room-create-actions #reloadBooksBtn:hover {
+  background: var(--border);
+}
+
+.room-create-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 상세 페이지 */
+.room-nav-minimal {
+  margin-bottom: 24px;
+}
+
+.room-detail-panel {
+  margin-bottom: 20px;
+}
+
+.room-detail-state .content-box {
+  min-height: auto;
+}
+
+.room-detail-actions {
+  margin: 16px 0 0;
+}
+
+.room-member-list {
+  gap: 8px;
+}
+
+.room-member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.room-member-name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.room-master-badge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.room-detail-leave {
+  margin-top: 8px;
+  margin-bottom: 32px;
+}
+
+.btn-leave-shell {
+  background: var(--surface-muted);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-leave-shell:hover {
+  background: var(--border);
+}

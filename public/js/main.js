@@ -2,9 +2,23 @@ document.addEventListener('DOMContentLoaded', fetchGuests);
 
 const mainForm = document.getElementById('mainForm');
 const mainList = document.getElementById('mainList');
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    const headers = { 'Content-Type': 'application/json' };
 
+    if (token) {
+      headers.Authorization = token.startsWith('Bearer ')
+        ? token
+        : `Bearer ${token}`;
+    }
+
+    return headers;
+  };
 async function fetchGuests() {
-  const response = await fetch('/api/main');
+  const response = await fetch('/api/main',{
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
   const result = await response.json();
   
   if (result.success) {
@@ -21,13 +35,13 @@ async function fetchGuests() {
 
 mainForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-
+  const authorization = getAuthHeaders();
   const name = document.getElementById('name').value;
   const content = document.getElementById('content').value;
 
   const response = await fetch('/api/main', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ name, content })
   });
 

@@ -29,8 +29,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'main.html'));
 });
 
+app.get('/room', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'room.html'));
+});
+
 app.get('/book-ranking', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'book-ranking.html'));
+});
+
+app.get('/book', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'book.html'));
 });
 
 app.get('/login', (req, res) => {
@@ -45,12 +53,20 @@ app.get('/mypage', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'mypage.html'));
 });
 
+app.get('/readinglog', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'readinglog.html'));
+});
+
 app.get('/edit-user', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'edit-user.html'));
 });
 
 app.get('/reading', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'reading.html'));
+});
+
+app.get('/book-report', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'book-report.html'));
 });
 
 app.listen(3000);

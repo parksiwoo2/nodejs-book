@@ -388,7 +388,7 @@ async function openRoomPage(roomId) {
     : '<span class="meta">멤버 정보 없음</span>';
 
   $('rpActions').innerHTML = isMaster
-    ? '<span class="badge">👑 내 모임</span>'
+    ? `<span class="badge">👑 내 모임</span> <button class="btn-sm btn-danger" id="rpDelete">모임 삭제</button>`
     : isMember
       ? `<span class="badge">참여 중</span> <button class="btn-sm btn-ghost" id="rpLeave">나가기</button>`
       : `<button id="rpJoin">참여하기</button>`;
@@ -406,6 +406,18 @@ async function openRoomPage(roomId) {
       if (!confirm('이 모임에서 나갈까요?')) return;
       const left = await api(`/room/${roomId}/leave`, { method: 'DELETE' });
       if (left) { await loadRooms(); openRoomPage(roomId); }
+    });
+  }
+
+  const deleteBtn = $('rpDelete');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm(`"${room.title}" 모임을 삭제할까요?\n삭제하면 되돌릴 수 없습니다.`)) return;
+      const deleted = await api(`/room/${roomId}`, { method: 'DELETE' });
+      if (deleted) {
+        alert('모임이 삭제되었습니다.');
+        showTab('rooms');
+      }
     });
   }
 

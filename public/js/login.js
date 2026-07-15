@@ -45,7 +45,7 @@ loginForm.addEventListener('submit', async (e) => {
     localStorage.setItem('token', result.data.token);
 
     showMessage(loginMessage, '로그인되었습니다.', 'success');
-    setLoginState();
+    window.location.href = '/'; // 로그인 후 통합 페이지로
   } catch (error) {
     showMessage(loginMessage, '서버에 연결할 수 없습니다.', 'error');
   }

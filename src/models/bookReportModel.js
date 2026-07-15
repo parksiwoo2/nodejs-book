@@ -29,6 +29,16 @@ const bookReportSchema = new mongoose.Schema({
       type: String
     }
   },
+  // 독서 모임(방)에서 쓴 독후감이면 방 스냅샷 저장 (일반 독후감은 없음)
+  room: {
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Room'
+    },
+    title: {
+      type: String
+    }
+  },
   comments: [
     {
       userId: {

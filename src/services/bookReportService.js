@@ -1,5 +1,6 @@
 const BookReport = require("../models/bookReportModel");
 const Book = require("../models/bookModel");
+const Room = require("../models/roomModel");
 const mongoose = require("mongoose");
 
 // code, statusCode를 담은 에러를 만들어 던진다. 라우트의 catch에서 그대로 응답으로 변환됨.
@@ -27,16 +28,25 @@ const bookReportService = {
    * 독후감 목록 조회 (페이지네이션)
    * 본문/댓글 배열은 빼고 요약 필드 + 댓글 개수만 반환
    */
-  listReports: async ({ page = 1, limit = 10 }) => {
+  listReports: async ({ page = 1, limit = 10, roomId }) => {
     const skip = (page - 1) * limit;
 
+    // roomId가 오면 그 방에서 작성된 독후감만
+    const filter = {};
+    if (roomId) {
+      if (!mongoose.isValidObjectId(roomId)) {
+        throwError("ROOM_NOT_FOUND", 404, "존재하지 않는 방입니다.");
+      }
+      filter["room._id"] = roomId;
+    }
+
     const [reports, total] = await Promise.all([
-      BookReport.find()
+      BookReport.find(filter)
         .sort({ createdDt: -1 })
         .skip(skip)
         .limit(limit)
-        .select("title book user comments createdDt"),
-      BookReport.countDocuments()
+        .select("title book user room comments createdDt"),
+      BookReport.countDocuments(filter)
     ]);
 
     const items = reports.map((r) => ({
@@ -44,6 +54,7 @@ const bookReportService = {
       title: r.title,
       book: r.book,
       user: r.user,
+      room: r.room && r.room._id ? r.room : undefined,
       commentCount: r.comments.length,
       createdDt: r.createdDt
     }));
@@ -59,8 +70,29 @@ const bookReportService = {
   /**
    * 독후감 작성
    * book은 bookId로 조회해서 title/author를 스냅샷으로 저장 (denormalized)
+   * roomId가 오면: 방 멤버인지 확인 후 책은 방의 책으로 자동 지정, 방 스냅샷 저장
    */
-  createReport: async ({ title, bookId, contents, user }) => {
+  createReport: async ({ title, bookId, roomId, contents, user }) => {
+    let roomSnapshot;
+
+    if (roomId) {
+      if (!mongoose.isValidObjectId(roomId)) {
+        throwError("ROOM_NOT_FOUND", 404, "존재하지 않는 방입니다.");
+      }
+      const room = await Room.findById(roomId);
+      if (!room) {
+        throwError("ROOM_NOT_FOUND", 404, "존재하지 않는 방입니다.");
+      }
+      const isMember = (room.members || []).some(
+        (m) => m._id && m._id.toString() === user._id.toString()
+      );
+      if (!isMember) {
+        throwError("FORBIDDEN", 403, "방 멤버만 이 방에 독후감을 쓸 수 있습니다.");
+      }
+      bookId = room.book._id; // 방의 책으로 강제
+      roomSnapshot = { _id: room._id, title: room.title };
+    }
+
     if (!mongoose.isValidObjectId(bookId)) {
       throwError("BOOK_NOT_FOUND", 404, "존재하지 않는 도서입니다.");
     }
@@ -81,6 +113,7 @@ const bookReportService = {
         _id: user._id,
         name: user.name
       },
+      ...(roomSnapshot && { room: roomSnapshot }),
       comments: []
     });
 

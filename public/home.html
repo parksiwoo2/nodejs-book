@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>독서 기록장</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body data-page="home">
+  <script src="/js/layout.js"></script>
+
+  <div class="container">
+    <div class="page-header">
+      <p class="eyebrow">Book Journal</p>
+      <h1>📖 독서 기록장</h1>
+    </div>
+
+    <!-- ==================== 홈 ==================== -->
+    <section id="tab-home" class="app-section active">
+      <div class="stat-row">
+        <div class="stat-tile">
+          <p class="stat-value" id="stTime">–</p>
+          <p class="stat-label">⏱️ 내 독서 시간</p>
+        </div>
+        <div class="stat-tile">
+          <p class="stat-value" id="stReports">–</p>
+          <p class="stat-label">✏️ 전체 독후감</p>
+        </div>
+        <div class="stat-tile">
+          <p class="stat-value" id="stRooms">–</p>
+          <p class="stat-label">🏠 독서 모임</p>
+        </div>
+      </div>
+
+      <div class="card-grid" style="margin-bottom:24px">
+        <a class="card clickable" href="#reports" data-goto="reports">
+          <h3>✏️ 독후감</h3>
+          <p class="meta">책을 읽고 기록을 남겨요</p>
+        </a>
+        <a class="card clickable" href="#rooms" data-goto="rooms">
+          <h3>🏠 독서 모임</h3>
+          <p class="meta">같은 책을 함께 읽어요</p>
+        </a>
+        <a class="card clickable" href="#time" data-goto="time">
+          <h3>⏱️ 독서 시간</h3>
+          <p class="meta">타이머로 재고 기록을 확인해요</p>
+        </a>
+        <a class="card clickable" href="#rank" data-goto="rank">
+          <h3>🏆 랭킹</h3>
+          <p class="meta">지금 인기 있는 책을 봐요</p>
+        </a>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>최근 독후감</h2></div>
+        <div class="content-box" id="recentReports">
+          <p class="empty">불러오는 중...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 독후감 ==================== -->
+    <section id="tab-reports" class="app-section">
+      <p class="meta" id="roomBanner" style="display:none;margin-bottom:14px"></p>
+
+      <div class="toolbar">
+        <button id="btnShowWrite">✏️ 독후감 쓰기</button>
+        <button class="btn-ghost" id="btnReportRefresh">새로고침</button>
+        <button class="btn-ghost" id="btnExitRoom" style="display:none">전체 독후감 보기</button>
+      </div>
+
+      <!-- 작성 폼 -->
+      <div id="reportWriteBox" class="panel" style="margin-bottom:20px">
+        <div class="panel-header"><h2>독후감 작성</h2></div>
+        <div class="content-box">
+          <form id="writeForm" class="form">
+            <div class="field">
+              <label for="wTitle">제목</label>
+              <input type="text" id="wTitle" placeholder="독후감 제목" required>
+            </div>
+            <div class="field" id="bookPickField">
+              <label>책 선택</label>
+              <div id="reportPickerMount"></div>
+            </div>
+            <div class="field">
+              <label for="wContents">내용</label>
+              <textarea id="wContents" rows="7" placeholder="책을 읽고 느낀 점을 자유롭게" style="width:100%"></textarea>
+            </div>
+            <div class="toolbar" style="margin:0">
+              <button type="submit">등록</button>
+              <button type="button" class="btn-ghost" id="btnCancelWrite">취소</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 목록 -->
+      <div id="reportListBox">
+        <div class="stack" id="reportList"></div>
+        <div class="toolbar" style="margin-top:18px">
+          <button class="btn-sm btn-ghost" id="btnPrev">◀ 이전</button>
+          <span class="meta" id="pageInfo"></span>
+          <button class="btn-sm btn-ghost" id="btnNext">다음 ▶</button>
+        </div>
+      </div>
+
+      <!-- 상세 -->
+      <div id="reportDetailBox">
+        <button class="btn-sm btn-ghost" id="btnBack">◀ 목록으로</button>
+        <div class="panel" style="margin-top:14px">
+          <div class="content-box">
+            <div id="dView">
+              <h2 id="dTitle" style="margin-bottom:4px"></h2>
+              <p class="meta" id="dMeta"></p>
+              <hr class="divider">
+              <p class="report-contents" id="dContents"></p>
+              <div class="toolbar" style="margin:0">
+                <button class="btn-sm btn-ghost" id="btnEditReport">수정</button>
+                <button class="btn-sm btn-danger" id="btnDeleteReport">삭제</button>
+              </div>
+            </div>
+            <!-- 인라인 수정 폼 (prompt 대신) -->
+            <form id="dEditForm" class="form" style="display:none">
+              <div class="field">
+                <label for="deTitle">제목</label>
+                <input type="text" id="deTitle" required>
+              </div>
+              <div class="field">
+                <label for="deContents">내용</label>
+                <textarea id="deContents" rows="8" style="width:100%" required></textarea>
+              </div>
+              <div class="toolbar" style="margin:0">
+                <button type="submit">저장</button>
+                <button type="button" class="btn-ghost" id="btnEditCancel">취소</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header"><h2>💬 댓글</h2></div>
+          <div class="content-box">
+            <div id="commentList"></div>
+            <form id="commentForm" class="toolbar" style="margin:14px 0 0">
+              <input type="text" id="cContent" placeholder="댓글을 입력하세요" required style="flex:1;min-width:200px">
+              <button type="submit" class="btn-sm">등록</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 독서 모임 ==================== -->
+    <section id="tab-rooms" class="app-section">
+      <div class="toolbar">
+        <button id="btnShowCreate">➕ 모임 만들기</button>
+        <button class="btn-ghost" id="btnRoomRefresh">새로고침</button>
+      </div>
+
+      <div id="roomCreateBox" class="panel" style="display:none;margin-bottom:20px">
+        <div class="panel-header"><h2>새 독서 모임</h2></div>
+        <div class="content-box">
+          <form id="createForm" class="form">
+            <div class="field">
+              <label for="rTitle">모임 이름</label>
+              <input type="text" id="rTitle" placeholder="예: 어린왕자 같이 읽기" required>
+            </div>
+            <div class="field">
+              <label>함께 읽을 책</label>
+              <div id="roomPickerMount"></div>
+            </div>
+            <div class="toolbar" style="margin:0">
+              <button type="submit">만들기</button>
+              <button type="button" class="btn-ghost" id="btnCancelCreate">취소</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card-grid" id="roomList"></div>
+    </section>
+
+    <!-- ==================== 모임 상세 (방 페이지) ==================== -->
+    <section id="tab-room" class="app-section">
+      <button class="btn-sm btn-ghost" id="btnRoomBack" style="margin-bottom:14px">◀ 모임 목록</button>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="content-box">
+          <p class="eyebrow">Reading Room</p>
+          <h2 id="rpTitle" style="font-size:24px"></h2>
+          <p class="meta" id="rpBook"></p>
+          <p class="meta" id="rpMaster"></p>
+          <div class="toolbar" style="margin:14px 0 0" id="rpActions"></div>
+          <hr class="divider">
+          <p style="margin:0 0 8px;font-weight:700;font-size:13.5px">멤버</p>
+          <p id="rpMembers" style="margin:0"></p>
+        </div>
+      </div>
+
+      <!-- 방 안 독후감 작성 폼 -->
+      <div class="panel" id="rpWriteBox" style="display:none;margin-bottom:20px">
+        <div class="panel-header"><h2>✏️ 독후감 쓰기</h2></div>
+        <div class="content-box">
+          <form id="rpWriteForm" class="form">
+            <div class="field">
+              <label for="rpwTitle">제목</label>
+              <input type="text" id="rpwTitle" placeholder="독후감 제목" required>
+            </div>
+            <div class="field">
+              <label for="rpwContents">내용</label>
+              <textarea id="rpwContents" rows="6" placeholder="함께 읽은 책, 어땠나요?" style="width:100%" required></textarea>
+            </div>
+            <div class="toolbar" style="margin:0">
+              <button type="submit">등록</button>
+              <button type="button" class="btn-ghost" id="rpWriteCancel">취소</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>📚 이 모임의 독후감</h2>
+          <button class="btn-sm" id="btnRoomWrite">✏️ 독후감 쓰기</button>
+        </div>
+        <div class="content-box">
+          <div class="stack" id="rpReports"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 독서 시간 ==================== -->
+    <section id="tab-time" class="app-section">
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-header"><h2>⏱️ 독서 타이머</h2></div>
+        <div class="content-box">
+          <div class="field">
+            <label>어떤 책을 읽나요?</label>
+            <div id="timePickerMount"></div>
+          </div>
+          <div class="timer-circle" id="timerCircle"><span id="timeDisplay">00:00:00</span></div>
+          <div class="timer-controls">
+            <button id="btnTimerStart">시작</button>
+            <button class="btn-ghost" id="btnTimerPause" disabled>일시정지</button>
+            <button id="btnTimerSave" disabled>기록 저장</button>
+          </div>
+          <p class="empty" id="timerMessage" style="padding:6px 0"></p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>📊 내 독서 기록</h2></div>
+        <div class="content-box">
+          <p style="margin:0 0 4px">총 독서 시간</p>
+          <p class="stat-big" id="totalTime">-</p>
+          <hr class="divider">
+          <div id="logList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 랭킹 ==================== -->
+    <section id="tab-rank" class="app-section">
+      <div class="toolbar">
+        <select id="rankPeriod">
+          <option value="all">전체 기간</option>
+          <option value="daily">오늘</option>
+          <option value="weekly">최근 7일</option>
+          <option value="monthly">최근 1개월</option>
+        </select>
+        <button class="btn-ghost btn-sm" id="btnRankRefresh">새로고침</button>
+      </div>
+      <div class="stack" id="rankList"></div>
+    </section>
+  </div>
+
+  <script src="/js/book-picker.js"></script>
+  <script src="/js/home.js"></script>
+</body>
+</html>

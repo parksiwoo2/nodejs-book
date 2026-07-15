@@ -33,8 +33,10 @@ function updateNavActive(name) {
   const navName = name === 'room' ? 'rooms' : name;
   document.querySelectorAll('.site-nav .nav-link').forEach((a) => {
     const href = a.getAttribute('href') || '';
+    const base = href.split('#')[0];
+    const onHome = base === '/' || base === '/home' || base === '';
     const hash = href.includes('#') ? href.split('#')[1] : 'home';
-    a.classList.toggle('active', href.startsWith('/home') && hash === navName);
+    a.classList.toggle('active', onHome && hash === navName);
   });
 }
 document.querySelectorAll('[data-goto]').forEach((el) => {

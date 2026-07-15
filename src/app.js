@@ -25,13 +25,14 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api', apiRouter);
 
+// 통합 페이지 (홈/독후감/독서 모임/독서 시간/랭킹 탭)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'main.html'));
+  res.sendFile(path.join(__dirname, '..', 'public', 'home.html'));
 });
 
-// 통합 페이지 (홈/독후감/독서 모임 탭)
+// 예전 주소 호환: /home → /
 app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'home.html'));
+  res.redirect('/');
 });
 
 app.get('/room', (req, res) => {

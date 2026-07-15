@@ -19,17 +19,16 @@
 
   // ---------- 네비게이션 주입 ----------
   const MENU = [
-    { href: '/home', label: '홈' },
-    { href: '/home#reports', label: '독후감' },
-    { href: '/home#rooms', label: '독서 모임' },
-    { href: '/home#time', label: '독서 시간' },
-    { href: '/home#rank', label: '랭킹' }
+    { href: '/', label: '홈' },
+    { href: '/#reports', label: '독후감' },
+    { href: '/#rooms', label: '독서 모임' },
+    { href: '/#time', label: '독서 시간' },
+    { href: '/#rank', label: '랭킹' }
   ];
 
   const path = location.pathname;
   const links = MENU.map((m) => {
-    const base = m.href.split('#')[0];
-    const active = path === base && m.href === '/home' ? ' active' : '';
+    const active = path === '/' && m.href === '/' ? ' active' : '';
     return `<a class="nav-link${active}" href="${m.href}">${m.label}</a>`;
   }).join('');
 
@@ -42,7 +41,7 @@
   nav.className = 'site-nav';
   nav.innerHTML = `
     <div class="nav-inner">
-      <a class="brand" href="/home">📖 독서<span>기록장</span></a>
+      <a class="brand" href="/">📖 독서<span>기록장</span></a>
       ${links}
       <span class="nav-spacer"></span>
       ${authArea}

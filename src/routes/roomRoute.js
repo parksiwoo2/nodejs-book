@@ -1,12 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const { createRoom, joinRoom, leaveRoom, getAllRoomList, getRoomDetail } = require("../services/roomService");
+const { 
+    createRoom, 
+    joinRoom, 
+    leaveRoom, 
+    getAllRoomList, 
+    getRoomDetail, 
+    deleteRoom
+} = require("../services/roomService");
 
+const { checkAuth } = require("../middlewares/auth");
 /*
  * 방 생성 API 
  * 최종 주소: POST /api/room
  */
-router.post("/", async (req, res) => {
+router.post("/", checkAuth, async (req, res) => {
     try {
     const { title, bookId } = req.body;
 
@@ -46,15 +54,72 @@ router.post("/", async (req, res) => {
     });
     }
 });
-/**
+
+/*
+ * 부원 가입 api
+ * 최종 주소: POST /api/room/:roomid/join
+ */
+router.post("/:roomid/join", checkAuth, async (req, res) => {
+    try {
+        const { roomid } = req.params;
+
+        const updatedRoom = await joinRoom(roomid, req.user);
+
+        return res.status(201).json({
+            success: true,
+            message: "방에 성공적으로 가입했습니다.",
+            data: {
+                Room: updatedRoom
+            }
+        });
+    } catch (error) {
+        const statusCode = error.status || error.statusCode || 500;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "SERVER_ERROR",
+                message: error.message || "방 가입에 실패했습니다."
+            }
+        });
+    }
+});
+
+/*
+ * 방 폭파(삭제) api
+ * 최종 주소 : DELETE /api/room/:roomid
+ */
+
+router.delete("/:roomid", checkAuth, async (req, res) => {
+    try {
+        const { roomid } = req.params;
+        const userId = req.user._id;
+
+        await deleteRoom(roomid, userId);
+
+        return res.status(200).json({
+            success: true,
+            message: "성공적으로 방이 삭제되었습니다."
+        });
+    } catch (error) {
+        const statusCode = error.status || 400;
+        return res.status(statusCode).json({
+            success: false,
+            error: {
+                code: error.code || "BAD_REQUEST",
+                message: error.message || "방 삭제에 실패했습니다."
+            }
+        });
+    }
+});
+
+/*
  * 방탈퇴 api
  * 최종 주소: DELETE /api/room/:roomid/leave
  */
 
-router.delete("/:roomid/leave", async (req, res) => {
+router.delete("/:roomid/leave", checkAuth, async (req, res) => {
     try {
         const { roomid } = req.params;
-
         const userid = req.user._id;
 
         await leaveRoom(roomid, userid);
@@ -82,7 +147,7 @@ router.delete("/:roomid/leave", async (req, res) => {
  * 방 목록 api
  * 최종 주소 : GET /api/room/list
  */
-router.get("/list", async (req, res) => {
+router.get("/list", checkAuth, async (req, res) => {
     try {
         const rooms = await getAllRoomList();
 
@@ -106,7 +171,7 @@ router.get("/list", async (req, res) => {
  * 방 상세 조회 api
  * 최종 주소 : GET /api/room/:roomid
  */
-router.get("/:roomid", async (req, res) => {
+router.get("/:roomid", checkAuth, async (req, res) => {
     try {
         const { roomid } = req.params;
 
@@ -129,33 +194,6 @@ router.get("/:roomid", async (req, res) => {
         });
     }
 });
-/*
- * 부원 가입 api
- * 최종 주소: POST /api/room/:roomid/join
- */
-router.post("/:roomid/join", async (req, res) => {
-    try {
-        const { roomid } = req.params;
 
-        const updatedRoom = await joinRoom(roomid, req.user);
-
-        return res.status(201).json({
-            success: true,
-            message: "방에 성공적으로 가입했습니다.",
-            data: {
-                Room: updatedRoom
-            }
-        });
-    } catch (error) {
-        const statusCode = error.status || error.statusCode || 500;
-        return res.status(statusCode).json({
-            success: false,
-            error: {
-                code: error.code || "SERVER_ERROR",
-                message: error.message || "방 가입에 실패했습니다."
-            }
-        });
-    }
-});
 
 module.exports = router;

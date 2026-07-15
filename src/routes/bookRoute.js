@@ -41,6 +41,24 @@ router.get("/search", async (req, res) => {
 });
 
 /**
+ * 등록된 책 목록 조회 (DB)
+ * 최종 주소: GET /api/book
+ */
+router.get("/", async (req, res) => {
+  try {
+    const books = await bookService.listBooks();
+    return res.status(200).json({
+      success: true,
+      data: {
+        books
+      }
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+});
+
+/**
  * 책 등록 (검색 결과에서 선택한 책을 DB에 저장, title+author 중복 시 기존 반환)
  * 최종 주소: POST /api/book
  */

@@ -11,6 +11,28 @@ const statusMessage = document.getElementById('statusMessage');
 
 const bookIdInput = document.getElementById('bookId');
 
+const bgm = new Audio('/audio/rain.m4a');
+bgm.loop = true;
+bgm.volume = 0.5;
+
+function playBgm() {
+  const playPromise = bgm.play();
+  if (playPromise && typeof playPromise.catch === 'function') {
+    playPromise.catch((err) => {
+      console.warn('BGM play failed:', err);
+    });
+  }
+}
+
+function pauseBgm() {
+  bgm.pause();
+}
+
+function stopBgm() {
+  bgm.pause();
+  bgm.currentTime = 0;
+}
+
 function getAuthHeader() {
   const token = localStorage.getItem('token');
   if (!token) return null;
@@ -32,11 +54,13 @@ startBtn.addEventListener('click', () => {
   if (isRunning) return;
   isRunning = true;
   timerCircle.classList.add('active');
-  
+
   startBtn.disabled = true;
   pauseBtn.disabled = false;
   saveBtn.disabled = false;
   statusMessage.classList.remove('show');
+
+  playBgm();
 
   timerInterval = setInterval(() => {
     seconds++;
@@ -48,8 +72,9 @@ pauseBtn.addEventListener('click', () => {
   if (!isRunning) return;
   isRunning = false;
   timerCircle.classList.remove('active');
-  
+
   clearInterval(timerInterval);
+  pauseBgm();
   startBtn.disabled = false;
   pauseBtn.disabled = true;
   startBtn.textContent = '계속';
@@ -59,8 +84,9 @@ saveBtn.addEventListener('click', async () => {
   isRunning = false;
   clearInterval(timerInterval);
   timerCircle.classList.remove('active');
-  
-  const readingTime = seconds; 
+  pauseBgm();
+
+  const readingTime = seconds;
   const bookId = bookIdInput.value.trim();
   const authorization = getAuthHeader();
 
@@ -103,6 +129,7 @@ saveBtn.addEventListener('click', async () => {
       showStatus('성공적으로 저장되었습니다!');
       seconds = 0;
       updateDisplay();
+      stopBgm();
       startBtn.textContent = '시작';
       startBtn.disabled = false;
       saveBtn.textContent = '기록 저장';
